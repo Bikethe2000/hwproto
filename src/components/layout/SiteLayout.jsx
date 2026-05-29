@@ -14,7 +14,7 @@ export default function SiteLayout() {
       <Footer />
       {/* Floating WhatsApp button */}
       <a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/6973620089"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-signal flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform glow-signal"

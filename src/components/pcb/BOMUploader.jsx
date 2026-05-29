@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileSpreadsheet, Loader2, AlertCircle, CheckCircle2, X, ChevronDown, ChevronUp, Package } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import SectionLabel from '@/components/shared/SectionLabel';
 
 const COMPONENT_DB = [
@@ -89,7 +89,7 @@ export default function BOMUploader() {
     const missing = enriched.filter(r => !r.match);
     const totalCost = found.reduce((sum, r) => sum + (r.match.price * r.qty), 0);
 
-    base44.integrations.Core.InvokeLLM({
+    api.integrations.Core.InvokeLLM({
       prompt: `You are a PCB component sourcing assistant. Analyze this BOM data and provide a 2-3 sentence professional summary:
 - Total components: ${enriched.length}
 - Identified in database: ${found.length}

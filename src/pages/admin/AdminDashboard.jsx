@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Package, FolderOpen, Printer, Settings, ArrowRight, Clock } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -8,9 +8,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.PortfolioProject.list(),
-      base44.entities.PrintRequest.list(),
+      api.entities.Product.list(),
+      api.entities.PortfolioProject.list(),
+      api.entities.PrintRequest.list(),
     ]).then(([products, projects, printReqs]) => {
       setCounts({ products: products.length, projects: projects.length, printRequests: printReqs.length });
     });

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Loader2, FolderOpen, ChevronDown } from 'lucide-react';
 import PageHero from '../components/shared/PageHero';
 import SectionLabel from '../components/shared/SectionLabel';
 import { WhatsAppButton } from '../components/shared/CTAButtons';
 
-const LINE_FOLLOWER_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/1dff870d7_generated_98882691.png';
-const SUMO_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/ae5983445_generated_d8144de5.png';
-const PCB_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/aab26640b_generated_515f32a3.png';
-const PRINT_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/5fd405f6f_generated_6ada00a9.png';
-const LAB_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/4c5b0814e_generated_5a7e46e3.png';
-const CAD_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/c1f40b78e_generated_d277a8cd.png';
+import LINE_FOLLOWER_IMG from '@/assets/line_follower.svg';
+import SUMO_IMG from '@/assets/sumo.svg';
+import PCB_IMG from '@/assets/pcb.svg';
+import PRINT_IMG from '@/assets/print.svg';
+import LAB_IMG from '@/assets/lab.svg';
+import CAD_IMG from '@/assets/cad.svg';
 
 const FALLBACK = [
   { id: 'f1', title: 'Autonomous Line Follower', category: 'Robotics', image_url: LINE_FOLLOWER_IMG, description: 'Competition-grade line follower robot with PID control, IR sensor array, and custom PCB. Multiple competition wins.', tags: ['Arduino', 'PCB Design', 'PID Control'], results: '1st Place — National Robotics Championship' },
@@ -32,7 +32,7 @@ export default function Portfolio() {
   const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
-    base44.entities.PortfolioProject.list('-sort_order').then((data) => {
+    api.entities.PortfolioProject.list('-sort_order').then((data) => {
       setProjects(data.length > 0 ? data : FALLBACK);
       setLoading(false);
     }).catch(() => { setProjects(FALLBACK); setLoading(false); });

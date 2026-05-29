@@ -17,6 +17,10 @@ import Engineering from './pages/Services/Engineering';
 import Store from './pages/Store';
 import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -31,6 +35,7 @@ import SmartHome from './pages/Services/SmartHome';
 import WebDevelopment from './pages/Services/WebDevelopment';
 import DashboardDev from './pages/Services/DashboardDev';
 import MVPDev from './pages/Services/MVPDev';
+import DynamicServicePage from "./pages/Services/DynamicServices";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -72,6 +77,7 @@ const AuthenticatedApp = () => {
         <Route path="/services/web-development" element={<WebDevelopment />} />
         <Route path="/services/dashboard-dev" element={<DashboardDev />} />
         <Route path="/services/mvp-dev" element={<MVPDev />} />
+        <Route path="/services/:serviceKey" element={<DynamicServicePage />} />
       </Route>
 
       {/* Admin */}
@@ -84,6 +90,10 @@ const AuthenticatedApp = () => {
         <Route path="orders" element={<AdminOrders />} />
       </Route>
 
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Truck, Globe, Package, MapPin, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 
 // BoxNow supported countries/regions
 const BOXNOW_COUNTRIES = ['Greece', 'GR', 'Bulgaria', 'BG', 'Cyprus', 'CY', 'France', 'FR', 'Netherlands', 'NL', 'Belgium', 'BE'];

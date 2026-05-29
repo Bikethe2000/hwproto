@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Package, CheckCircle2, Clock, Truck, AlertCircle, CircuitBoard, Cpu, Box, Wrench, Rocket, Loader2, ChevronRight } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import PageHero from '@/components/shared/PageHero';
 import SectionLabel from '@/components/shared/SectionLabel';
 
@@ -146,8 +146,8 @@ export default function OrderTracker() {
 
     const q = query.trim().toLowerCase();
     const [byEmail, byOrderId] = await Promise.all([
-      base44.entities.ClientOrder.filter({ client_email: q }).catch(() => []),
-      base44.entities.ClientOrder.filter({ order_id: query.trim() }).catch(() => []),
+      api.entities.ClientOrder.filter({ client_email: q }).catch(() => []),
+      api.entities.ClientOrder.filter({ order_id: query.trim() }).catch(() => []),
     ]);
 
     // Deduplicate

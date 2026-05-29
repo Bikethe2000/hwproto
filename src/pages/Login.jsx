@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+import { toast } from "@/hooks/use-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,8 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
+      // Authenticate via backend and obtain server access token
+      await api.auth.loginViaEmailPassword(email, password);
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid email or password");
@@ -29,7 +31,11 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+    toast({
+      title: "Google Sign-In",
+      description: "Google Sign-In is not configured yet. Please log in with your email and password.",
+      variant: "destructive",
+    });
   };
 
   return (

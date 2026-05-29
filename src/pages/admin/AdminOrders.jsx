@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Plus, Search, Loader2, Pencil, Trash2, Save, X, MessageCircle } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -39,7 +39,7 @@ export default function AdminOrders() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
-  const load = () => base44.entities.ClientOrder.list('-created_date', 100).then(setOrders).finally(() => setLoading(false));
+  const load = () => api.entities.ClientOrder.list('-created_date', 100).then(setOrders).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
   const openNew = () => {
@@ -55,9 +55,9 @@ export default function AdminOrders() {
     const statusChanged = editing && editing.status !== form.status;
 
     if (editing) {
-      await base44.entities.ClientOrder.update(editing.id, form);
+      await api.entities.ClientOrder.update(editing.id, form);
     } else {
-      await base44.entities.ClientOrder.create(form);
+      await api.entities.ClientOrder.create(form);
     }
 
     // Send email notification if status changed or new order
@@ -72,7 +72,7 @@ export default function AdminOrders() {
         ? `Hi ${form.client_name || 'there'},\n\nYour order has been received!\n\nOrder ID: ${form.order_id}\nService: ${form.service_type}\nProject: ${form.project_title || '—'}\n\nWe'll review your request and get back to you soon.\n\nTrack your order at: https://hwproto.studio/track\n\nBest,\nHW Proto Studio`
         : `Hi ${form.client_name || 'there'},\n\nYour order status has been updated.\n\nOrder ID: ${form.order_id}\nProject: ${form.project_title || form.service_type}\nNew Status: ${STATUS_LABELS[form.status]}${form.status_message ? `\n\nMessage from studio:\n${form.status_message}` : ''}${form.tracking_number ? `\n\nTracking: ${form.shipping_carrier || ''} ${form.tracking_number}` : ''}${form.estimated_delivery ? `\nEstimated Delivery: ${form.estimated_delivery}` : ''}\n\nTrack your order: https://hwproto.studio/track\n\nBest,\nHW Proto Studio`;
 
-      await base44.integrations.Core.SendEmail({
+      await api.integrations.Core.SendEmail({
         to: form.client_email,
         subject,
         body,
@@ -87,7 +87,7 @@ export default function AdminOrders() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this order?')) return;
-    await base44.entities.ClientOrder.delete(id);
+    await api.entities.ClientOrder.delete(id);
     load();
   };
 

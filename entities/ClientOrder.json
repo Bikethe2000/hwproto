@@ -1,0 +1,73 @@
+{
+  "name": "ClientOrder",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "Unique readable order ID (e.g. PCB-2024-001)"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "PCB Design",
+        "3D CAD Design",
+        "3D Printing",
+        "Micro Soldering",
+        "Engineering Project",
+        "Custom Build"
+      ],
+      "default": "PCB Design"
+    },
+    "project_title": {
+      "type": "string",
+      "description": "Short title of the project"
+    },
+    "project_description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "in_review",
+        "sourcing_components",
+        "in_production",
+        "quality_check",
+        "shipped",
+        "delivered",
+        "on_hold",
+        "cancelled"
+      ],
+      "default": "submitted"
+    },
+    "status_message": {
+      "type": "string",
+      "description": "Custom message from the studio about the current status"
+    },
+    "estimated_delivery": {
+      "type": "string",
+      "format": "date"
+    },
+    "tracking_number": {
+      "type": "string"
+    },
+    "shipping_carrier": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal admin notes"
+    }
+  },
+  "required": [
+    "order_id",
+    "client_email",
+    "service_type"
+  ]
+}

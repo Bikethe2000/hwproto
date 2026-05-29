@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Plus, Pencil, Trash2, X, Loader2, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ export default function AdminPortfolio() {
 
   const load = async () => {
     setLoading(true);
-    const data = await base44.entities.PortfolioProject.list('-sort_order');
+    const data = await api.entities.PortfolioProject.list('-sort_order');
     setProjects(data);
     setLoading(false);
   };
@@ -45,10 +45,10 @@ export default function AdminPortfolio() {
     const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
     const data = { ...form, tags };
     if (editing) {
-      await base44.entities.PortfolioProject.update(editing, data);
+      await api.entities.PortfolioProject.update(editing, data);
       toast.success('Project updated');
     } else {
-      await base44.entities.PortfolioProject.create(data);
+      await api.entities.PortfolioProject.create(data);
       toast.success('Project created');
     }
     setShowForm(false);
@@ -58,7 +58,7 @@ export default function AdminPortfolio() {
 
   const remove = async (id) => {
     if (!confirm('Delete this project?')) return;
-    await base44.entities.PortfolioProject.delete(id);
+    await api.entities.PortfolioProject.delete(id);
     toast.success('Deleted');
     await load();
   };

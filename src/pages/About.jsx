@@ -5,7 +5,7 @@ import PageHero from '../components/shared/PageHero';
 import SectionLabel from '../components/shared/SectionLabel';
 import { WhatsAppButton, QuoteButton } from '../components/shared/CTAButtons';
 
-const ABOUT_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/6f6dca051_generated_b82247c1.png';
+import ABOUT_IMG from '../assets/about.png';
 
 const skills = [
   { icon: CircuitBoard, title: 'PCB Design', description: 'KiCad & EasyEDA — schematic capture, multi-layer PCB layout, DFM optimization' },

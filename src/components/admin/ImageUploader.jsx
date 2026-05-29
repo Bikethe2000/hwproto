@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Upload, X, Loader2, Image } from 'lucide-react';
 
 export default function ImageUploader({ value, onChange, label = "Image" }) {
@@ -9,7 +9,7 @@ export default function ImageUploader({ value, onChange, label = "Image" }) {
   const handleFile = async (file) => {
     if (!file) return;
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await api.integrations.Core.UploadFile({ file });
     onChange(file_url);
     setUploading(false);
   };

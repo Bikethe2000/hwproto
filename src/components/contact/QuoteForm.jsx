@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Upload, FileCheck, Loader2, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { toast } from 'sonner';
 import ShippingCalculator from '../shipping/ShippingCalculator';
 
@@ -36,7 +36,7 @@ export default function QuoteForm({ compact = false }) {
 
     let file_url = null;
     if (file) {
-      const res = await base44.integrations.Core.UploadFile({ file });
+      const res = await api.integrations.Core.UploadFile({ file });
       file_url = res.file_url;
     }
 
@@ -57,10 +57,34 @@ ${form.description}
 ${file_url ? `Attached file: ${file_url}` : 'No file attached'}
     `.trim();
 
-    await base44.integrations.Core.SendEmail({
+    const htmlBody = `
+      <div style="font-family: Inter, system-ui, sans-serif; color: #111827; line-height: 1.6;">
+        <h2 style="margin-bottom: .5rem; color: #0f172a;">Quote Request Received</h2>
+        <p>Hi <strong>${form.name}</strong>,</p>
+        <p>Thank you for your quote request! We've received your message and will get back to you within <strong>24 hours</strong>.</p>
+        <div style="margin: 1.25rem 0; padding: 1rem; border-radius: 1rem; background: #f8fafc; border: 1px solid #e2e8f0;">
+          <p style="margin-bottom: .5rem;"><strong>Service:</strong> ${form.service || 'General'}</p>
+          <p style="margin-bottom: .5rem;"><strong>Budget:</strong> ${form.budget || 'TBD'}</p>
+          <p style="margin-bottom: .5rem;"><strong>Deadline:</strong> ${form.deadline || 'Flexible'}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <p style="margin-bottom: .25rem;"><strong>Project summary</strong></p>
+          <p style="white-space: pre-wrap;">${form.description}</p>
+        </div>
+        <p style="margin-bottom: .5rem;"><strong>Email:</strong> ${form.email}</p>
+        <p style="margin-bottom: .5rem;"><strong>WhatsApp:</strong> ${form.whatsapp || 'Not provided'}</p>
+        <p style="margin-bottom: 1rem;"><strong>Address:</strong> ${form.address || 'Not provided'}</p>
+        ${file_url ? `<p style="margin-bottom: 1rem;"><strong>Attachment:</strong> <a href="${file_url}" style="color: #2563eb; text-decoration: none;">View file</a></p>` : ''}
+        <p>If you need a faster response, message us on WhatsApp.</p>
+        <p style="margin-top: 1.5rem;">Best,<br /><strong>HW Proto Studio</strong></p>
+      </div>
+    `.trim();
+
+    await api.integrations.Core.SendEmail({
       to: form.email,
       subject: `Quote Request Received — ${form.service || 'General Enquiry'}`,
-      body: `Hi ${form.name},\n\nThank you for your quote request! We've received your message and will get back to you within 24 hours.\n\nService: ${form.service || 'General'}\nBudget: ${form.budget || 'TBD'}\nDeadline: ${form.deadline || 'Flexible'}\n\nIf you need a faster response, message us on WhatsApp.\n\nBest,\nHW Proto Studio`,
+      body: emailBody,
+      html: htmlBody,
       from_name: 'HW Proto Studio',
     });
 
@@ -79,7 +103,7 @@ ${file_url ? `Attached file: ${file_url}` : 'No file attached'}
         <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
           We'll review your project and reply within 24 hours. Check your email for confirmation.
         </p>
-        <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer"
+        <a href="https://wa.me/6973620089" target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-signal text-background font-semibold text-sm rounded-lg hover:opacity-90 transition-all">
           Chat on WhatsApp
         </a>

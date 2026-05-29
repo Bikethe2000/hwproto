@@ -1,0 +1,66 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in EUR (leave null for request-based)"
+    },
+    "price_label": {
+      "type": "string",
+      "description": "Custom price label (e.g. 'From \u20ac8' or 'Request Quote')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Electronics",
+        "Hardware",
+        "Connectors",
+        "Magnets",
+        "Kits",
+        "Other"
+      ],
+      "default": "Electronics"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_stock",
+        "made_to_order",
+        "custom_build",
+        "out_of_stock"
+      ],
+      "default": "in_stock"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional product images"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

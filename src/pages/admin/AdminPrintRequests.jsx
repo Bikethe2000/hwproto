@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Loader2, MessageCircle, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ export default function AdminPrintRequests() {
 
   const load = async () => {
     setLoading(true);
-    const data = await base44.entities.PrintRequest.list('-created_date');
+    const data = await api.entities.PrintRequest.list('-created_date');
     setRequests(data);
     setLoading(false);
   };
@@ -30,7 +30,7 @@ export default function AdminPrintRequests() {
   useEffect(() => { load(); }, []);
 
   const updateStatus = async (id, status) => {
-    await base44.entities.PrintRequest.update(id, { status });
+    await api.entities.PrintRequest.update(id, { status });
     toast.success('Status updated');
     await load();
   };

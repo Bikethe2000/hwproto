@@ -41,7 +41,7 @@ export default function Contact() {
               <SectionLabel text="Direct Contact" />
               <div className="space-y-4">
                 {/* WhatsApp */}
-                <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer"
+                <a href="https://wa.me/6973620089" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-4 p-5 rounded-xl border border-signal/30 bg-signal/5 hover:bg-signal/10 transition-all group">
                   <div className="w-11 h-11 rounded-xl bg-signal/10 flex items-center justify-center flex-shrink-0">
                     <MessageCircle className="w-5 h-5 text-signal" />

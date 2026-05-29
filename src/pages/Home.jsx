@@ -4,9 +4,9 @@ import { CircuitBoard, Box, Printer, Wrench, Rocket, ArrowRight, Search, Package
 import { Link } from 'react-router-dom';
 import SectionLabel from '../components/shared/SectionLabel';
 import { WhatsAppButton, QuoteButton } from '../components/shared/CTAButtons';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 
-const HERO_IMG = 'https://media.base44.com/images/public/6a183d82770ee575c3658f58/1cd8f0e65_generated_5a6e6056.png';
+import HERO_IMG from '../assets/hero.png';
 
 const SERVICES = [
   { icon: CircuitBoard, title: 'PCB Design',          desc: 'Schematic to Gerber. KiCad, multi-layer, DFM-ready.',           link: '/services/pcb-design',      tag: 'Most Popular' },
@@ -85,8 +85,8 @@ function QuickTracker() {
     setLoading(true); setSearched(true); setResult(null);
     const q = query.trim();
     const [byEmail, byId] = await Promise.all([
-      base44.entities.ClientOrder.filter({ client_email: q }).catch(() => []),
-      base44.entities.ClientOrder.filter({ order_id: q }).catch(() => []),
+      api.entities.ClientOrder.filter({ client_email: q }).catch(() => []),
+      api.entities.ClientOrder.filter({ order_id: q }).catch(() => []),
     ]);
     const combined = [...byEmail, ...byId].filter((o, i, a) => a.findIndex(x => x.id === o.id) === i);
     setResult(combined.length > 0 ? combined[0] : null);

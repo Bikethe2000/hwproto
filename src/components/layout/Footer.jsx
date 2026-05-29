@@ -51,7 +51,7 @@ export default function Footer() {
           <div>
             <h4 className="font-mono-code text-xs uppercase tracking-wider text-muted-foreground mb-4">Get in Touch</h4>
             <div className="space-y-3 mb-6">
-              <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer"
+              <a href="https://wa.me/6973620089" target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-signal hover:opacity-80 transition-opacity">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp

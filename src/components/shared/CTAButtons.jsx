@@ -5,7 +5,21 @@ import { MessageCircle, ArrowRight } from 'lucide-react';
 export function WhatsAppButton({ text = "Send on WhatsApp", className = "" }) {
   return (
     <a
-      href="https://wa.me/1234567890"
+      href="https://wa.me/6973620089"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center gap-2 px-6 py-3 bg-signal text-background font-display font-semibold text-sm rounded-md hover:opacity-90 active:scale-[0.98] transition-all glow-signal ${className}`}
+    >
+      <MessageCircle className="w-4 h-4" />
+      {text}
+    </a>
+  );
+}
+
+export function WhatsAppButton2({ text = "Send on WhatsApp", className = "" }) {
+  return (
+    <a
+      href="https://wa.me/6941625842"
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center gap-2 px-6 py-3 bg-signal text-background font-display font-semibold text-sm rounded-md hover:opacity-90 active:scale-[0.98] transition-all glow-signal ${className}`}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Plus, Pencil, Trash2, X, Loader2, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,7 @@ export default function AdminProducts() {
 
   const load = async () => {
     setLoading(true);
-    const data = await base44.entities.Product.list('-sort_order');
+    const data = await api.entities.Product.list('-sort_order');
     setProducts(data);
     setLoading(false);
   };
@@ -42,10 +42,10 @@ export default function AdminProducts() {
     setSaving(true);
     const data = { ...form, price: form.price !== '' ? parseFloat(form.price) : null };
     if (editing) {
-      await base44.entities.Product.update(editing, data);
+      await api.entities.Product.update(editing, data);
       toast.success('Product updated');
     } else {
-      await base44.entities.Product.create(data);
+      await api.entities.Product.create(data);
       toast.success('Product created');
     }
     setShowForm(false);
@@ -55,7 +55,7 @@ export default function AdminProducts() {
 
   const remove = async (id) => {
     if (!confirm('Delete this product?')) return;
-    await base44.entities.Product.delete(id);
+    await api.entities.Product.delete(id);
     toast.success('Deleted');
     await load();
   };

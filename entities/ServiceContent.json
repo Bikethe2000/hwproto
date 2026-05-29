@@ -1,0 +1,56 @@
+{
+  "name": "ServiceContent",
+  "type": "object",
+  "properties": {
+    "service_key": {
+      "type": "string",
+      "enum": [
+        "pcb-design",
+        "3d-cad",
+        "3d-printing",
+        "micro-soldering",
+        "engineering"
+      ],
+      "description": "Which service page this content belongs to"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "includes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of included deliverables"
+    },
+    "extras": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of add-on services"
+    },
+    "hero_image_url": {
+      "type": "string"
+    },
+    "gallery_images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Gallery of example images"
+    },
+    "cta_whatsapp_text": {
+      "type": "string"
+    },
+    "cta_heading": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "service_key"
+  ]
+}

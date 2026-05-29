@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Loader2, CheckCircle2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 
 export default function NewsletterSignup({ source = 'footer', compact = false }) {
   const [email, setEmail] = useState('');
@@ -14,14 +14,14 @@ export default function NewsletterSignup({ source = 'footer', compact = false })
     setLoading(true);
     setError('');
 
-    const existing = await base44.entities.NewsletterSubscriber.filter({ email: email.trim() }).catch(() => []);
+    const existing = await api.entities.NewsletterSubscriber.filter({ email: email.trim() }).catch(() => []);
     if (existing.length > 0) {
       setError('This email is already subscribed.');
       setLoading(false);
       return;
     }
 
-    await base44.entities.NewsletterSubscriber.create({ email: email.trim(), source });
+    await api.entities.NewsletterSubscriber.create({ email: email.trim(), source });
     setLoading(false);
     setDone(true);
   };

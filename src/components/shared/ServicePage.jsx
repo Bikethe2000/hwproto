@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import PageHero from './PageHero';
 import SectionLabel from './SectionLabel';
 import { WhatsAppButton, QuoteButton } from './CTAButtons';
@@ -30,7 +30,7 @@ export default function ServicePage({ serviceKey, label, title: defaultTitle, de
 
   useEffect(() => {
     if (!serviceKey) return;
-    base44.entities.ServiceContent.filter({ service_key: serviceKey }).then((results) => {
+    api.entities.ServiceContent.filter({ service_key: serviceKey }).then((results) => {
       if (results.length > 0) setContent(results[0]);
     }).catch(() => {});
   }, [serviceKey]);

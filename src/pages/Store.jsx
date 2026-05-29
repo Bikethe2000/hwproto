@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Loader2, Package, Globe, Truck, Info } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import PageHero from '../components/shared/PageHero';
 import SectionLabel from '../components/shared/SectionLabel';
 import ShippingCalculator from '../components/shipping/ShippingCalculator';
@@ -31,7 +31,7 @@ export default function Store() {
   const [categories, setCategories] = useState([ALL_CATS]);
 
   useEffect(() => {
-    base44.entities.Product.list('-sort_order').then((data) => {
+    api.entities.Product.list('-sort_order').then((data) => {
       const list = data.length > 0 ? data : FALLBACK_PRODUCTS;
       setProducts(list);
       const cats = [ALL_CATS, ...new Set(list.map(p => p.category).filter(Boolean))];
@@ -150,7 +150,7 @@ export default function Store() {
                         <div className="flex items-center justify-between mt-auto">
                           <span className="font-display font-bold text-lg text-primary">{getPriceLabel(product)}</span>
                           <a
-                            href={`https://wa.me/1234567890?text=Hi! I'm interested in: ${product.title}`}
+                            href={`https://wa.me/6973620089?text=Hi! I'm interested in: ${product.title}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono-code text-signal border border-signal/30 rounded-md hover:bg-signal/10 active:scale-[0.98] transition-all"
@@ -180,7 +180,7 @@ export default function Store() {
               Can't find what you need? We source components and build custom kits for specific projects.
             </p>
             <a
-              href="https://wa.me/1234567890?text=Hi! I need help sourcing custom components."
+              href="https://wa.me/6973620089?text=Hi! I need help sourcing custom components."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-signal text-background font-display font-semibold text-sm rounded-md hover:opacity-90 active:scale-[0.98] transition-all glow-signal"

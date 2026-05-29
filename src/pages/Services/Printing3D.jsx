@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Loader2, FileCheck, MessageCircle, Info, AlertCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -61,8 +61,8 @@ function STLUploadForm() {
     if (!form.name || !form.email) return toast.error('Name and email are required');
     if (!file) return toast.error('Please upload an STL file');
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    await base44.entities.PrintRequest.create({
+    const { file_url } = await api.integrations.Core.UploadFile({ file });
+    await api.entities.PrintRequest.create({
       ...form,
       file_url,
       file_name: file.name,
