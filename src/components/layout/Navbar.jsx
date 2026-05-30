@@ -146,6 +146,14 @@ export default function Navbar() {
                 Admin
               </Link>
             )}
+            {!user && (
+              <Link
+                to="/login"
+                className="px-3 py-2 text-xs font-mono-code text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Login
+              </Link>
+            )}
             <Link
               to="/contact"
               className="px-4 py-2 text-xs font-mono-code font-medium border border-primary/40 text-primary rounded-md hover:bg-primary/10 active:scale-[0.98] transition-all"
@@ -219,6 +227,10 @@ export default function Navbar() {
                     Admin Panel
                   </Link>
                 )}
+
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-center px-4 py-2.5 text-sm font-mono-code text-muted-foreground border border-border rounded-md">
+                  Login
+                </Link>
                 <Link
                   to="/contact"
                   onClick={() => setMobileOpen(false)}
