@@ -6,14 +6,27 @@ require("dotenv").config();
 
 const app = express();
 
-const allowedOrigins = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173')
+const configuredOrigins = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173')
   .split(',')
   .map((v) => v.trim())
   .filter(Boolean);
 
+const allowedOrigins = new Set([
+  ...configuredOrigins,
+  'http://localhost:5173',
+  'https://hwproto.vercel.app',
+  'https://www.hwproto.vercel.app',
+]);
+
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (
+      !origin ||
+      allowedOrigins.has(origin) ||
+      /^https:\/\/hwproto(-[a-z0-9-]+)?\.vercel\.app$/i.test(origin)
+    ) {
+      return callback(null, true);
+    }
     return callback(new Error('CORS not allowed'));
   },
   credentials: true,

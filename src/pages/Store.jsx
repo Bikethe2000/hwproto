@@ -19,6 +19,7 @@ const STATUS_CONFIG = {
 const ALL_CATS = 'All';
 
 export default function Store() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState(ALL_CATS);
