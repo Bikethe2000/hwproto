@@ -12,7 +12,7 @@ const DEFAULT_SERVICE_LINKS = [
   { label: 'Micro Soldering', path: '/services/micro-soldering' },
   { label: 'Engineering Projects', path: '/services/engineering' },
   { label: 'AI Chatbots', path: '/services/ai-chatbots' },
-  { label: 'Smart Home & Automation', path: '/services/smart-home-automation' },
+  { label: 'Smart Home & Automation', path: '/services/smart-home' },
   { label: 'Website Development', path: '/services/web-development' },
   { label: 'Dashboard & Admin Panels', path: '/services/dashboard-dev' },
   { label: 'MVP Development', path: '/services/mvp-dev' },

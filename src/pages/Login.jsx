@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/hooks/use-toast";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +23,7 @@ export default function Login() {
     try {
       // Authenticate via backend and obtain server access token
       await api.auth.loginViaEmailPassword(email, password);
-      window.location.href = "/";
+      navigate("/", { replace: true });
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
