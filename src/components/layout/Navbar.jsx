@@ -4,6 +4,9 @@ import { Menu, X, Cpu } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingCart, User } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+
 
 const DEFAULT_SERVICE_LINKS = [
   { label: 'PCB Design', path: '/services/pcb-design' },
@@ -24,6 +27,8 @@ export default function Navbar() {
   const [serviceLinks, setServiceLinks] = useState(DEFAULT_SERVICE_LINKS);
   const location = useLocation();
   const { user } = useAuth();
+  const { items } = useCart();
+
 
   // Load any dynamically added services from Firestore and merge them in
   useEffect(() => {
@@ -137,8 +142,40 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="hidden lg:flex items-center gap-3">
-            {user?.role === 'admin' && (
+          <div className="hidden lg:flex items-center gap-4">
+
+            {/* Cart Icon */}
+            <Link
+              to="/cart"
+              className="relative text-muted-foreground hover:text-foreground transition"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {items.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full px-1.5">
+                  {items.length}
+                </span>
+              )}
+            </Link>
+
+            {/* Profile Icon */}
+            {user ? (
+              <Link
+                to={`/profile/${user.id}`}
+                className="text-muted-foreground hover:text-foreground transition"
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="text-muted-foreground hover:text-foreground transition"
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            )}
+
+            {/* Admin Link */}
+            {user?.role === "admin" && (
               <Link
                 to="/admin"
                 className="px-3 py-2 text-xs font-mono-code text-muted-foreground hover:text-foreground transition-colors"
@@ -146,14 +183,8 @@ export default function Navbar() {
                 Admin
               </Link>
             )}
-            {!user && (
-              <Link
-                to="/login"
-                className="px-3 py-2 text-xs font-mono-code text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Login
-              </Link>
-            )}
+
+            {/* Quote Button */}
             <Link
               to="/contact"
               className="px-4 py-2 text-xs font-mono-code font-medium border border-primary/40 text-primary rounded-md hover:bg-primary/10 active:scale-[0.98] transition-all"
@@ -161,6 +192,7 @@ export default function Navbar() {
               GET A QUOTE
             </Link>
           </div>
+
 
           <button
             className="lg:hidden p-2 text-muted-foreground hover:text-foreground"

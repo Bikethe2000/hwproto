@@ -26,6 +26,32 @@ export default function CartPage() {
     navigate('/checkout');
   };
 
+  const handleStripeCheckout = async () => {
+    try {
+        const itemsForStripe = items.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        }));
+
+        const response = await apiFetch("/payments/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: itemsForStripe }),
+        });
+
+        if (!response.url) {
+        console.error("Stripe session creation failed:", response);
+        return;
+        }
+
+        // Redirect to Stripe Checkout
+        window.location.href = response.url;
+    } catch (error) {
+        console.error("Checkout error:", error);
+    }
+    };
+
   return (
     <SiteLayout>
       <div className="min-h-screen bg-background py-8">
@@ -117,13 +143,14 @@ export default function CartPage() {
                 <div className="sticky top-6 space-y-6">
                   <div className="bg-card border border-border rounded-lg p-6">
                     <h3 className="text-lg font-bold mb-6">Cart Summary</h3>
-                        <CartSummary
-                        items={cartItems}
+                    <CartSummary
+                        items={items}
                         subtotal={subtotal}
                         shipping={shippingCost}
                         total={subtotal + shippingCost}
-                        onCheckout={() => console.log("Checkout clicked")}
-                        />
+                        onCheckout={handleStripeCheckout}
+                    />
+
                   </div>
 
                   {/* Info Cards */}

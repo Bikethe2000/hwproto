@@ -1,16 +1,19 @@
+// routes/payments.js
 const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middleware/auth');
 const entityStore = require('../localEntityStore');
 
-// For now, using a placeholder for Stripe
-// In production, this will use actual Stripe API
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || null;
-const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || null;
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-const stripe = require("stripe")(STRIPE_SECRET_KEY);
+if (!STRIPE_SECRET_KEY) {
+  console.warn('⚠️ STRIPE_SECRET_KEY is not set. Payments will fail.');
+}
 
-// Note: Actual Stripe integration requires: npm install stripe
+const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
 // Get Stripe publishable key
 router.get('/config', (req, res) => {
@@ -19,54 +22,68 @@ router.get('/config', (req, res) => {
   });
 });
 
-// Create payment intent (Stripe)
-router.post('/create-intent', authenticate, async (req, res) => {
+/**
+ * Create Stripe Checkout Session
+ * Body: { items: [{ name, price, quantity }], metadata?: {} }
+ */
+router.post('/create-checkout-session', async (req, res) => {
   try {
-    const { amount, currency, orderId, metadata } = req.body;
-    const userId = req.user.id;
+    const { items, metadata } = req.body;
+    const userId = req.user?.id;
 
-    if (!amount || amount < 0.5) {
-      return res.status(400).json({ error: 'Invalid amount' });
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'No items provided' });
     }
 
-    // TODO: Replace with actual Stripe implementation
-    // const stripe = require('stripe')(STRIPE_SECRET_KEY);
-    // const intent = await stripe.paymentIntents.create({
-    //   amount: Math.round(amount * 100), // Convert to cents
-    //   currency: currency || 'eur',
-    //   description: `Order ${orderId}`,
-    //   metadata: { orderId, userId, ...metadata },
-    // });
+    const lineItems = items.map((item) => {
+      if (!item.name || !item.price || !item.quantity) {
+        throw new Error('Each item must have name, price, and quantity');
+      }
+      return {
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: item.name,
+          },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity,
+      };
+    });
 
-    // Mock response for now
-    const paymentIntent = {
-      id: `pi_mock_${Date.now()}`,
-      amount: Math.round(amount * 100),
-      currency: currency || 'eur',
-      status: 'requires_payment_method',
-      client_secret: `pi_mock_${Date.now()}_secret_mock`,
-      orderId,
-      userId,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Save payment intent to database
-    const savedIntent = await entityStore.create('PaymentIntent', paymentIntent);
-
-    res.json({
-      success: true,
-      data: {
-        clientSecret: savedIntent.client_secret,
-        paymentIntentId: savedIntent.id,
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      success_url: `${FRONTEND_URL}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${FRONTEND_URL}/checkout-cancel`,
+      metadata: {
+        userId: req.user?.id || 'guest',
+        ...(metadata || {}),
       },
     });
+
+    // Optionally store session in your local entity store
+    await entityStore.create('PaymentSession', {
+      id: session.id,
+      userId: req.user?.id || 'guest',
+      status: session.status,
+      amount_total: session.amount_total,
+      currency: session.currency,
+      createdAt: new Date().toISOString(),
+    });
+
+    res.json({ url: session.url });
   } catch (error) {
-    console.error('Error creating payment intent:', error);
+    console.error('Error creating checkout session:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Confirm payment
+/**
+ * Optional: Confirm payment intent manually (if you use PaymentIntents directly)
+ * Keeping your previous shape but now wired to Stripe if needed.
+ */
 router.post('/confirm', authenticate, async (req, res) => {
   try {
     const { paymentIntentId, paymentMethodId } = req.body;
@@ -75,36 +92,21 @@ router.post('/confirm', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Payment intent ID required' });
     }
 
-    // TODO: Replace with actual Stripe implementation
-    // const stripe = require('stripe')(STRIPE_SECRET_KEY);
-    // const intent = await stripe.paymentIntents.confirm(paymentIntentId, {
-    //   payment_method: paymentMethodId,
-    // });
+    const intent = await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: paymentMethodId,
+    });
 
-    // Mock response
-    const paymentIntent = await entityStore.get('PaymentIntent', paymentIntentId);
-    if (!paymentIntent) {
-      return res.status(404).json({ error: 'Payment intent not found' });
-    }
-
-    paymentIntent.status = 'succeeded';
-    paymentIntent.paymentMethodId = paymentMethodId;
-    await entityStore.update('PaymentIntent', paymentIntentId, paymentIntent);
-
-    // Update order status
-    const orders = await entityStore.filter('Order', { id: paymentIntent.orderId });
-    if (orders.length > 0) {
-      const order = orders[0];
-      order.paymentStatus = 'completed';
-      order.status = 'processing';
-      order.updatedAt = new Date().toISOString();
-      await entityStore.update('Order', order.id, order);
-    }
+    // Update local store
+    await entityStore.update('PaymentIntent', paymentIntentId, {
+      status: intent.status,
+      paymentMethodId,
+      updatedAt: new Date().toISOString(),
+    });
 
     res.json({
       success: true,
       data: {
-        status: 'succeeded',
+        status: intent.status,
         paymentIntentId,
       },
     });
@@ -114,50 +116,92 @@ router.post('/confirm', authenticate, async (req, res) => {
   }
 });
 
-// Handle Stripe webhook
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    // TODO: Verify webhook signature with Stripe
-    // const sig = req.headers['stripe-signature'];
-    // const event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+/**
+ * Stripe Webhook
+ * Set endpoint in Stripe dashboard to: https://your-domain.com/api/payments/webhook
+ */
+router.post(
+  '/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    let event;
 
-    // Mock webhook handling
-    const event = JSON.parse(req.body);
-
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        console.log('Payment succeeded:', event.data.object.id);
-        break;
-      case 'payment_intent.payment_failed':
-        console.log('Payment failed:', event.data.object.id);
-        break;
-      default:
-        console.log('Unhandled event type:', event.type);
+    try {
+      if (!STRIPE_WEBHOOK_SECRET) {
+        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set, skipping signature verification.');
+        event = JSON.parse(req.body);
+      } else {
+        const sig = req.headers['stripe-signature'];
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          sig,
+          STRIPE_WEBHOOK_SECRET
+        );
+      }
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    res.json({ received: true });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
+    try {
+      switch (event.type) {
+        case "checkout.session.completed": {
+        const session = event.data.object;
 
-// Get payment methods for user
+        // Create order in your local store
+        await entityStore.create("Order", {
+            id: session.id,
+            userId: session.metadata.userId || null,
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            status: "processing",
+            paymentStatus: "paid",
+            createdAt: new Date().toISOString(),
+        });
+
+        break;
+        }
+
+        case 'payment_intent.succeeded': {
+          const intent = event.data.object;
+          console.log('✅ PaymentIntent succeeded:', intent.id);
+          break;
+        }
+        case 'payment_intent.payment_failed': {
+          const intent = event.data.object;
+          console.log('❌ PaymentIntent failed:', intent.id);
+          break;
+        }
+        default:
+          console.log('Unhandled event type:', event.type);
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Webhook handling error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+/**
+ * Get payment methods for user (still mocked or can be wired to Stripe)
+ */
 router.get('/methods', authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // TODO: Fetch actual payment methods from Stripe
-    // const stripe = require('stripe')(STRIPE_SECRET_KEY);
+    // Example: list payment methods if you store Stripe customer ID
     // const paymentMethods = await stripe.paymentMethods.list({
-    //   customer: userId,
+    //   customer: stripeCustomerId,
+    //   type: 'card',
     // });
 
-    // Mock response
     const paymentMethods = {
       object: 'list',
       data: [],
       total_count: 0,
+      userId,
     };
 
     res.json({ success: true, data: paymentMethods });
@@ -167,7 +211,9 @@ router.get('/methods', authenticate, async (req, res) => {
   }
 });
 
-// Process refund
+/**
+ * Process refund
+ */
 router.post('/refund', authenticate, async (req, res) => {
   try {
     const { paymentIntentId, amount, reason } = req.body;
@@ -176,25 +222,20 @@ router.post('/refund', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Payment intent ID required' });
     }
 
-    // TODO: Process refund with Stripe
-    // const stripe = require('stripe')(STRIPE_SECRET_KEY);
-    // const refund = await stripe.refunds.create({
-    //   payment_intent: paymentIntentId,
-    //   amount: amount ? Math.round(amount * 100) : undefined,
-    //   reason: reason || 'requested_by_customer',
-    // });
-
-    // Mock response
-    const refund = {
-      id: `re_mock_${Date.now()}`,
+    const refund = await stripe.refunds.create({
       payment_intent: paymentIntentId,
-      amount: amount ? Math.round(amount * 100) : null,
-      status: 'succeeded',
+      amount: amount ? Math.round(amount * 100) : undefined,
       reason: reason || 'requested_by_customer',
-      createdAt: new Date().toISOString(),
-    };
+    });
 
-    const savedRefund = await entityStore.create('Refund', refund);
+    const savedRefund = await entityStore.create('Refund', {
+      id: refund.id,
+      payment_intent: refund.payment_intent,
+      amount: refund.amount,
+      status: refund.status,
+      reason: refund.reason,
+      createdAt: new Date().toISOString(),
+    });
 
     res.json({
       success: true,
