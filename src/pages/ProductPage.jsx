@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { api } from "@/api/apiClient";
 import { add } from "date-fns";
 import { useCart } from "@/hooks/useCart";
-import { apiFetch } from "../api/apiClient";
+import { apiFetch } from "@/api/apiClient";
 
 
 export default function ProductPage() {
