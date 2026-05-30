@@ -2,7 +2,7 @@ import React from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useOrderHistory } from "@/hooks/useOrderHistory";
 import { useSales } from "@/hooks/useSales";
-import { useWasteListings } from "@/hooks/useWasteListings";
+// import { useWasteListings } from "@/hooks/useWasteListings";
 
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import OrderHistory from "@/components/profile/OrderHistory";
