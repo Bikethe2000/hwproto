@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, ArrowLeft, Package } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/lib/AuthContext';
-import CartItem from './CartItem';
+import CartItem from '@/components/cart/CartItem';
 import SiteLayout from '@/components/layout/SiteLayout';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
