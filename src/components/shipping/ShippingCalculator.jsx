@@ -94,8 +94,31 @@ export default function ShippingCalculator({ weightKg = 0.3 }) {
     } else if (isGreece) {
       options.push({ carrier: 'elta', ...calcRate('elta', weightKg), ...CARRIERS.elta });
     } else {
-      options.push({ carrier: 'dhl', ...calcDHL(c, weightKg), ...CARRIERS.dhl });
-    }
+        const dhlRes = await fetch("/api/dhl", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country: c, weightKg }),
+        });
+
+        const dhlData = await dhlRes.json();
+
+        if (dhlData.ok && dhlData.price) {
+          options.push({
+            carrier: "dhl",
+            min: dhlData.price,
+            max: dhlData.price,
+            ...CARRIERS.dhl,
+          });
+        } else {
+          // fallback to your old estimate if DHL API fails
+          options.push({
+            carrier: "dhl",
+            ...calcDHL(c, weightKg),
+            ...CARRIERS.dhl,
+          });
+        }
+      }
+
 
     setResult({ country: c, city: city.trim(), options });
     setLoading(false);

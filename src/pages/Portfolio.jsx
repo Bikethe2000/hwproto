@@ -13,14 +13,6 @@ import PRINT_IMG from '@/assets/print.svg';
 import LAB_IMG from '@/assets/lab.svg';
 import CAD_IMG from '@/assets/cad.svg';
 
-const FALLBACK = [
-  { id: 'f1', title: 'Autonomous Line Follower', category: 'Robotics', image_url: LINE_FOLLOWER_IMG, description: 'Competition-grade line follower robot with PID control, IR sensor array, and custom PCB. Multiple competition wins.', tags: ['Arduino', 'PCB Design', 'PID Control'], results: '1st Place — National Robotics Championship' },
-  { id: 'f2', title: 'Mini Sumo Robot', category: 'Robotics', image_url: SUMO_IMG, description: 'Compact sumo robot with aggressive wedge design, proximity sensors, and high-torque motors.', tags: ['3D Print', 'Motor Control', 'Sensors'], results: 'Top 3 — Regional Sumo Competition' },
-  { id: 'f3', title: 'Custom Motor Driver PCB', category: 'PCB', image_url: PCB_IMG, description: 'Dual H-bridge motor driver in KiCad. 4-layer PCB with integrated current sensing.', tags: ['KiCad', '4-Layer', 'DFM'] },
-  { id: 'f4', title: 'Robotic Arm Enclosure', category: '3D Print', image_url: CAD_IMG, description: 'Full mechanical design and 3D printing of a 6-DOF robotic arm. PETG with metal inserts.', tags: ['CAD', 'PETG', 'Assembly'] },
-  { id: 'f5', title: 'IoT Weather Station', category: 'Engineering', image_url: LAB_IMG, description: 'Complete IoT system with custom PCB, 3D printed enclosure, ESP32 firmware, and cloud dashboard.', tags: ['ESP32', 'IoT', 'Full Stack'] },
-  { id: 'f6', title: 'Drone Motor Mount', category: '3D Print', image_url: PRINT_IMG, description: 'Lightweight TPU motor mounts for racing drones. Optimized for vibration dampening.', tags: ['TPU', 'FEA Tested', 'Drone'] },
-];
 
 const ALL_CATS = 'All';
 const CAT_LIST = ['All', 'Robotics', 'PCB', '3D Print', 'Engineering', 'Other'];

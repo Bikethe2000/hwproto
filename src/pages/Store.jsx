@@ -13,14 +13,6 @@ const STATUS_CONFIG = {
   out_of_stock: { label: 'Out of Stock', class: 'text-muted-foreground border-border bg-muted/30' },
 };
 
-const FALLBACK_PRODUCTS = [
-  { id: 'f1', title: 'NFC Tags Pack', category: 'Electronics', description: 'NTAG215 NFC stickers, compatible with all NFC devices. Pack of 10.', price: 8, status: 'in_stock', image_url: null },
-  { id: 'f2', title: 'M2/M3/M4 Screw Kit', category: 'Hardware', description: 'Precision metric screws assortment — stainless steel, 500+ pieces.', price: 15, status: 'in_stock', image_url: null },
-  { id: 'f3', title: 'Neodymium Magnets', category: 'Hardware', description: 'N52 grade, various sizes. Perfect for prototyping and robotics.', price: 6, status: 'in_stock', image_url: null },
-  { id: 'f4', title: 'JST Connector Kit', category: 'Connectors', description: 'JST-XH and JST-PH connectors with pre-crimped wires. 100 sets.', price: 12, status: 'in_stock', image_url: null },
-  { id: 'f5', title: 'Dupont Jumper Wires', category: 'Connectors', description: 'M-M, M-F, F-F. 120 piece assortment.', price: 5, status: 'in_stock', image_url: null },
-  { id: 'f6', title: 'Heat Shrink Tubing', category: 'Electronics', description: 'Multi-size assortment. 200 piece kit.', price: 7, status: 'in_stock', image_url: null },
-];
 
 const ALL_CATS = 'All';
 

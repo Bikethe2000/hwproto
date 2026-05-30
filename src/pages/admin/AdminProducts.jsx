@@ -15,7 +15,17 @@ const STATUS_LABELS = {
   out_of_stock: { label: 'Out of Stock', class: 'bg-muted text-muted-foreground border-border' },
 };
 
-const EMPTY = { title: '', description: '', price: '', price_label: '', category: 'Electronics', status: 'in_stock', image_url: '', featured: false, sort_order: 0 };
+const EMPTY = {
+  title: '',
+  description: '',
+  price: '',
+  price_label: '',
+  category: 'Electronics',
+  status: 'in_stock',
+  image_url: '',
+  featured: false,
+  sort_order: 0
+};
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -24,6 +34,14 @@ export default function AdminProducts() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+
+  // NEW: dynamic categories
+  const [categories, setCategories] = useState([
+    'Electronics', 'Hardware', 'Connectors', 'Magnets', 'Kits', 'Other'
+  ]);
+
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -40,7 +58,12 @@ export default function AdminProducts() {
   const save = async () => {
     if (!form.title) return toast.error('Title is required');
     setSaving(true);
-    const data = { ...form, price: form.price !== '' ? parseFloat(form.price) : null };
+
+    const data = {
+      ...form,
+      price: form.price !== '' ? parseFloat(form.price) : null
+    };
+
     if (editing) {
       await api.entities.Product.update(editing, data);
       toast.success('Product updated');
@@ -48,6 +71,7 @@ export default function AdminProducts() {
       await api.entities.Product.create(data);
       toast.success('Product created');
     }
+
     setShowForm(false);
     await load();
     setSaving(false);
@@ -77,65 +101,191 @@ export default function AdminProducts() {
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-card border border-border rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="font-display font-semibold text-foreground">{editing ? 'Edit Product' : 'New Product'}</h2>
-              <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-muted-foreground" /></button>
+              <h2 className="font-display font-semibold text-foreground">
+                {editing ? 'Edit Product' : 'New Product'}
+              </h2>
+              <button onClick={() => setShowForm(false)}>
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
             </div>
+
             <div className="p-6 space-y-4">
-              <ImageUploader label="Product Image" value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
+              <ImageUploader
+                label="Product Image"
+                value={form.image_url}
+                onChange={(url) => setForm({ ...form, image_url: url })}
+              />
+
               <div>
                 <label className="block text-sm font-medium text-foreground/80 mb-1">Title *</label>
-                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Product name" className="bg-background border-border" />
+                <Input
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="Product name"
+                  className="bg-background border-border"
+                />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground/80 mb-1">Description</label>
-                <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Product description" rows={3} className="bg-background border-border" />
+                <Textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Product description"
+                  rows={3}
+                  className="bg-background border-border"
+                />
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground/80 mb-1">Price (€)</label>
-                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="Leave blank for quote" className="bg-background border-border" />
+                  <Input
+                    type="number"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    placeholder="Leave blank for quote"
+                    className="bg-background border-border"
+                  />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-foreground/80 mb-1">Price Label</label>
-                  <Input value={form.price_label} onChange={(e) => setForm({ ...form, price_label: e.target.value })} placeholder="e.g. From €8" className="bg-background border-border" />
+                  <Input
+                    value={form.price_label}
+                    onChange={(e) => setForm({ ...form, price_label: e.target.value })}
+                    placeholder="e.g. From €8"
+                    className="bg-background border-border"
+                  />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground/80 mb-1">Category</label>
-                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                    <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {['Electronics', 'Hardware', 'Connectors', 'Magnets', 'Kits', 'Other'].map(c => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground/80 mb-1">Status</label>
-                  <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                    <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="in_stock">In Stock</SelectItem>
-                      <SelectItem value="made_to_order">Made to Order</SelectItem>
-                      <SelectItem value="custom_build">Custom Build</SelectItem>
-                      <SelectItem value="out_of_stock">Out of Stock</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
+              {/* CATEGORY + ADD NEW */}
+              <div>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">Category</label>
+                <Select
+                  value={form.category}
+                  onValueChange={(v) => setForm({ ...form, category: v })}
+                >
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <button
+                  type="button"
+                  onClick={() => setShowNewCategory(true)}
+                  className="text-xs text-primary mt-1 hover:underline"
+                >
+                  + Add new category
+                </button>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">Status</label>
+                <Select
+                  value={form.status}
+                  onValueChange={(v) => setForm({ ...form, status: v })}
+                >
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_stock">In Stock</SelectItem>
+                    <SelectItem value="made_to_order">Made to Order</SelectItem>
+                    <SelectItem value="custom_build">Custom Build</SelectItem>
+                    <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} className="accent-primary" />
-                <label htmlFor="featured" className="text-sm text-foreground/80">Featured product</label>
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={form.featured}
+                  onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+                  className="accent-primary"
+                />
+                <label htmlFor="featured" className="text-sm text-foreground/80">
+                  Featured product
+                </label>
               </div>
             </div>
+
             <div className="flex gap-3 p-6 pt-0">
-              <Button onClick={save} disabled={saving} className="flex-1 bg-primary text-primary-foreground">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              <Button
+                onClick={save}
+                disabled={saving}
+                className="flex-1 bg-primary text-primary-foreground"
+              >
+                {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                 {editing ? 'Update' : 'Create'}
               </Button>
-              <Button variant="outline" onClick={() => setShowForm(false)} className="border-border">Cancel</Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setShowForm(false)}
+                className="border-border"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* NEW CATEGORY MINI-MODAL */}
+      {showNewCategory && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]">
+          <div className="bg-card border border-border rounded-lg p-5 w-full max-w-sm">
+            <h3 className="font-semibold mb-3">Add New Category</h3>
+
+            <Input
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="Enter category name"
+              className="mb-4"
+            />
+
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 bg-primary text-primary-foreground"
+                onClick={() => {
+                  if (!newCategory.trim()) return toast.error("Category cannot be empty");
+
+                  const cat = newCategory.trim();
+
+                  if (categories.includes(cat)) {
+                    toast.error("Category already exists");
+                    return;
+                  }
+
+                  setCategories([...categories, cat]);
+                  setForm({ ...form, category: cat });
+                  setNewCategory('');
+                  setShowNewCategory(false);
+                  toast.success("Category added");
+                }}
+              >
+                Add
+              </Button>
+
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowNewCategory(false);
+                  setNewCategory('');
+                }}
+              >
+                Cancel
+              </Button>
             </div>
           </div>
         </div>
@@ -143,34 +293,62 @@ export default function AdminProducts() {
 
       {/* Products grid */}
       {loading ? (
-        <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
       ) : products.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed border-border rounded-xl">
           <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">No products yet. Click "Add Product" to get started.</p>
+          <p className="text-muted-foreground">
+            No products yet. Click "Add Product" to get started.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {products.map((p) => (
             <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden">
-              {p.image_url && <img src={p.image_url} alt={p.title} className="w-full h-40 object-cover" />}
+              {p.image_url && (
+                <img
+                  src={p.image_url}
+                  alt={p.title}
+                  className="w-full h-40 object-cover"
+                />
+              )}
+
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-display font-semibold text-foreground text-sm">{p.title}</h3>
-                  <span className={`font-mono-code text-[10px] px-2 py-0.5 rounded-full border flex-shrink-0 ${STATUS_LABELS[p.status]?.class}`}>
+                  <h3 className="font-display font-semibold text-foreground text-sm">
+                    {p.title}
+                  </h3>
+
+                  <span
+                    className={`font-mono-code text-[10px] px-2 py-0.5 rounded-full border flex-shrink-0 ${STATUS_LABELS[p.status]?.class}`}
+                  >
                     {STATUS_LABELS[p.status]?.label}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{p.description}</p>
+
+                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                  {p.description}
+                </p>
+
                 <div className="flex items-center justify-between">
                   <span className="font-display font-bold text-primary text-sm">
                     {p.price_label || (p.price != null ? `€${p.price}` : 'Request Quote')}
                   </span>
+
                   <div className="flex gap-2">
-                    <button onClick={() => openEdit(p)} className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all">
+                    <button
+                      onClick={() => openEdit(p)}
+                      className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
+                    >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => remove(p.id)} className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive/30 transition-all">
+
+                    <button
+                      onClick={() => remove(p.id)}
+                      className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive/30 transition-all"
+                    >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

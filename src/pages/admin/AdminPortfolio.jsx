@@ -21,6 +21,13 @@ export default function AdminPortfolio() {
   const [form, setForm] = useState(EMPTY);
   const [tagsInput, setTagsInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState([
+    'Robotics', 'PCB', '3D Print', 'Engineering'
+  ]);
+
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+
 
   const load = async () => {
     setLoading(true);
@@ -93,7 +100,7 @@ export default function AdminPortfolio() {
                 <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="bg-background border-border" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-1">Category</label>
+                {/* <label className="block text-sm font-medium text-foreground/80 mb-1">Category</label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -101,7 +108,26 @@ export default function AdminPortfolio() {
                       <SelectItem key={c} value={c}>{c}</SelectItem>
                     ))}
                   </SelectContent>
+                </Select> */}
+                <div>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">Category</label>
+                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                  <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {categories.map(c => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowNewCategory(true)}
+                className="text-xs text-primary mt-1 hover:underline"
+              >
+                + Add new category
+              </button>
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/80 mb-1">Tags (comma-separated)</label>
@@ -169,6 +195,56 @@ export default function AdminPortfolio() {
           ))}
         </div>
       )}
+      {showNewCategory && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]">
+          <div className="bg-card border border-border rounded-lg p-5 w-full max-w-sm">
+            <h3 className="font-semibold mb-3">Add New Category</h3>
+
+            <Input
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="Enter category name"
+              className="mb-4"
+            />
+
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 bg-primary text-primary-foreground"
+                onClick={() => {
+                  if (!newCategory.trim()) return toast.error("Category cannot be empty");
+
+                  const cat = newCategory.trim();
+
+                  if (categories.includes(cat)) {
+                    toast.error("Category already exists");
+                    return;
+                  }
+
+                  setCategories([...categories, cat]);
+                  setForm({ ...form, category: cat });
+                  setNewCategory('');
+                  setShowNewCategory(false);
+                  toast.success("Category added");
+                }}
+              >
+                Add
+              </Button>
+
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowNewCategory(false);
+                  setNewCategory('');
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
