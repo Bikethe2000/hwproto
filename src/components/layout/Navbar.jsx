@@ -160,7 +160,7 @@ export default function Navbar() {
             {/* Profile Icon */}
             {user ? (
               <Link
-                to={`/profile/${user.id}`}
+                to={`/profile`}
                 className="text-muted-foreground hover:text-foreground transition"
               >
                 <User className="w-5 h-5" />

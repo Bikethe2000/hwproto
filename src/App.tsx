@@ -98,6 +98,8 @@ const AuthenticatedApp = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/cart" element={<CartPage />} />
       </Route>
 
       {/* Admin */}
