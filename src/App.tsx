@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { Analytics } from "@vercel/analytics/react"
 
 import SiteLayout from './components/layout/SiteLayout';
@@ -50,7 +49,7 @@ import AdminAddNewAdmin from "./pages/admin/AdminAddNew";
 import ProductPage from "./pages/ProductPage";
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings} = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -60,14 +59,14 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
-  }
+  // if (authError) {
+  //   if (authError.type === 'user_not_registered') {
+  //     return <UserNotRegisteredError />;
+  //   } else if (authError.type === 'auth_required') {
+  //     navigateToLogin();
+  //     return null;
+  //   }
+  // }
 
   return (
     <Routes>
