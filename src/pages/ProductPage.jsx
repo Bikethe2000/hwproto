@@ -3,6 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { api } from "@/api/apiClient";
+import { add } from "date-fns";
+import { useCart } from "@/hooks/useCart";
+import { apiFetch } from "@/api/apiClient";
+
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -11,7 +15,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const { addToCart } = useCart();
   useEffect(() => {
     api.entities.Product.get(id)
       .then((data) => {
@@ -39,6 +43,43 @@ export default function ProductPage() {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    addToCart({
+        id: product.id,
+        name: product.title,
+        price: product.price,
+        image: mainImage,
+        quantity: 1,
+    });
+    };
+
+  const handleBuyNow = async () => {
+    try {
+        const itemsForStripe = [
+        {
+            name: product.title,
+            price: product.price,
+            quantity: 1,
+        },
+        ];
+
+        const response = await apiFetch("/payments/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: itemsForStripe }),
+        });
+
+        if (!response.url) {
+        console.error("Stripe session creation failed:", response);
+        return;
+        }
+
+        window.location.href = response.url;
+    } catch (error) {
+        console.error("Buy Now error:", error);
+    }
+    };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -112,18 +153,19 @@ export default function ProductPage() {
           {/* Buttons */}
           <div className="flex gap-4">
             <button
-              className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition"
-              onClick={() => console.log("Add to cart:", product)}
+                className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition"
+                onClick={handleAddToCart}
             >
-              Add to Cart
+                Add to Cart
             </button>
 
             <button
-              className="flex-1 bg-signal text-signal-foreground py-3 rounded-lg font-medium hover:bg-signal/90 transition"
-              onClick={() => console.log("Buy now:", product)}
+                className="flex-1 bg-signal text-signal-foreground py-3 rounded-lg font-medium hover:bg-signal/90 transition"
+                onClick={handleBuyNow}
             >
-              Buy Now
+                Buy Now
             </button>
+
           </div>
 
           {/* WhatsApp CTA */}
