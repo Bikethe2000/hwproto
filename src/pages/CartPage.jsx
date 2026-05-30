@@ -5,10 +5,10 @@ import { ShoppingCart, ArrowLeft, Package } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/lib/AuthContext';
 import CartItem from './CartItem';
-import CartSummary from './CartSummary';
 import SiteLayout from '@/components/layout/SiteLayout';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import CartSummary from "@/components/cart/CartSummary";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -117,14 +117,13 @@ export default function CartPage() {
                 <div className="sticky top-6 space-y-6">
                   <div className="bg-card border border-border rounded-lg p-6">
                     <h3 className="text-lg font-bold mb-6">Cart Summary</h3>
-                    <CartSummary
-                      subtotal={subtotal}
-                      shippingCost={shippingCost}
-                      taxAmount={taxAmount}
-                      total={total}
-                      onCheckout={handleCheckout}
-                      isLoading={isCheckingOut}
-                    />
+                        <CartSummary
+                        items={cartItems}
+                        subtotal={subtotal}
+                        shipping={shippingCost}
+                        total={subtotal + shippingCost}
+                        onCheckout={() => console.log("Checkout clicked")}
+                        />
                   </div>
 
                   {/* Info Cards */}

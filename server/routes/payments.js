@@ -8,6 +8,8 @@ const entityStore = require('../localEntityStore');
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || null;
 const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || null;
 
+const stripe = require("stripe")(STRIPE_SECRET_KEY);
+
 // Note: Actual Stripe integration requires: npm install stripe
 
 // Get Stripe publishable key
