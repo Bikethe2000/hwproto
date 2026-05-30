@@ -2,6 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 
 export default function ProfileHeader({ profile }) {
+  const name = profile.displayName || profile.username || profile.name || 'User';
+  const createdAt = profile.createdAt || profile.created_at;
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -15,9 +17,9 @@ export default function ProfileHeader({ profile }) {
       />
 
       <div>
-        <h1 className="text-2xl font-bold">{profile.username}</h1>
+        <h1 className="text-2xl font-bold">{name}</h1>
         <p className="text-muted-foreground text-sm">
-          Member since {new Date(profile.createdAt).toLocaleDateString()}
+          {createdAt ? `Member since ${new Date(createdAt).toLocaleDateString()}` : 'Member'}
         </p>
 
         {profile.isSeller && (

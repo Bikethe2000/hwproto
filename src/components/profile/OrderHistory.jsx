@@ -30,25 +30,25 @@ export default function OrderHistory({ orders = [] }) {
             </div>
             <div>
               <p className="text-xs font-mono-code text-muted-foreground mb-1">DATE</p>
-              <p className="text-sm">{new Date(order.createdAt).toLocaleDateString()}</p>
+              <p className="text-sm">{new Date(order.createdAt || order.created_date || Date.now()).toLocaleDateString()}</p>
             </div>
             <div>
               <p className="text-xs font-mono-code text-muted-foreground mb-1">TOTAL</p>
-              <p className="text-sm font-bold">€{order.total.toFixed(2)}</p>
+              <p className="text-sm font-bold">€{Number(order.total ?? order.amount ?? 0).toFixed(2)}</p>
             </div>
             <div className="flex items-end">
               <div>
                 <p className="text-xs font-mono-code text-muted-foreground mb-1">STATUS</p>
                 <span
                   className={`text-xs px-2 py-1 rounded font-medium ${
-                    order.status === 'delivered'
+                    (order.status || 'processing') === 'delivered'
                       ? 'bg-signal/20 text-signal'
-                      : order.status === 'shipped'
+                      : (order.status || 'processing') === 'shipped'
                       ? 'bg-primary/20 text-primary'
                       : 'bg-accent/20 text-accent'
-                  }`}
+                }`}
                 >
-                  {order.status}
+                  {order.status || 'processing'}
                 </span>
               </div>
             </div>

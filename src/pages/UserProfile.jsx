@@ -62,34 +62,29 @@ export default function UserProfile() {
 
   if (loading) {
     return (
-      <SiteLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      </SiteLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
     );
   }
 
   if (error || !profile) {
     return (
-      <SiteLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <p className="text-lg text-muted-foreground">{error || 'Profile not found'}</p>
-            <Button onClick={() => navigate('/')} className="mt-4">
-              Go Home
-            </Button>
-          </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+          <p className="text-lg text-muted-foreground">{error || 'Profile not found'}</p>
+          <Button onClick={() => navigate('/')} className="mt-4">
+            Go Home
+          </Button>
         </div>
-      </SiteLayout>
+      </div>
     );
   }
 
   return (
-    <SiteLayout>
-      <div className="min-h-screen bg-background py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Profile Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -275,8 +270,7 @@ export default function UserProfile() {
               )}
             </Tabs>
           </motion.div>
-        </div>
       </div>
-    </SiteLayout>
+    </div>
   );
 }
