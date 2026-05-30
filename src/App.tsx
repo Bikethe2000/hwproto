@@ -4,6 +4,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { CartProvider } from '@/contexts/CartContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { Analytics } from "@vercel/analytics/react"
 
@@ -16,6 +17,11 @@ import Printing3D from './pages/Services/Printing3D';
 import MicroSoldering from './pages/Services/MicroSoldering';
 import Engineering from './pages/Services/Engineering';
 import Store from './pages/Store';
+import ProductDetail from './pages/ProductDetail';
+import CartPage from './pages/CartPage';
+import Checkout from './pages/Checkout';
+import UserProfile from './pages/UserProfile';
+import WasteMarketplace from './pages/WasteMarketplace';
 import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -41,6 +47,7 @@ import DashboardDev from './pages/Services/DashboardDev';
 import MVPDev from './pages/Services/MVPDev';
 import DynamicServicePage from "./pages/Services/DynamicServices";
 import AdminAddNewAdmin from "./pages/admin/AdminAddNew";
+import ProductPage from "./pages/ProductPage";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -74,6 +81,11 @@ const AuthenticatedApp = () => {
         <Route path="/services/micro-soldering" element={<MicroSoldering />} />
         <Route path="/services/engineering" element={<Engineering />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/product/:productId" element={<ProductDetail />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/profile/:userId" element={<UserProfile />} />
+        <Route path="/waste" element={<WasteMarketplace />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/track" element={<OrderTracker />} />
@@ -86,6 +98,7 @@ const AuthenticatedApp = () => {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/cookies" element={<Cookies />} />
+        <Route path="/product/:id" element={<ProductPage />} />
       </Route>
 
       {/* Admin */}
@@ -111,13 +124,15 @@ const AuthenticatedApp = () => {
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-        <Analytics />
-      </QueryClientProvider>
+      <CartProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+          <Analytics />
+        </QueryClientProvider>
+      </CartProvider>
     </AuthProvider>
   )
 }

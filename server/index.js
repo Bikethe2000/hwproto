@@ -20,6 +20,12 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/entities", require("./routes/entities"));
 app.use("/api/uploads", require("./routes/uploads"));
 app.use("/api/send-email", require("./routes/send-email"));
+app.use("/api/cart", require("./routes/cart"));
+app.use("/api/orders", require("./routes/orders"));
+app.use("/api/profiles", require("./routes/profiles"));
+app.use("/api/waste", require("./routes/waste"));
+app.use("/api/shipping", require("./routes/shipping"));
+app.use("/api/payments", require("./routes/payments"));
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

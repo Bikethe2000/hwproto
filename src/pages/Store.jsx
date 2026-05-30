@@ -5,6 +5,7 @@ import { api } from '@/api/apiClient';
 import PageHero from '../components/shared/PageHero';
 import SectionLabel from '../components/shared/SectionLabel';
 import ShippingCalculator from '../components/shipping/ShippingCalculator';
+import ProductDetailModal from '../components/product/ProductDetailModal';
 
 const STATUS_CONFIG = {
   in_stock: { label: 'In Stock', class: 'text-signal border-signal/30 bg-signal/5' },
@@ -13,7 +14,6 @@ const STATUS_CONFIG = {
   out_of_stock: { label: 'Out of Stock', class: 'text-muted-foreground border-border bg-muted/30' },
 };
 
-
 const ALL_CATS = 'All';
 
 export default function Store() {
@@ -21,19 +21,22 @@ export default function Store() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState(ALL_CATS);
   const [categories, setCategories] = useState([ALL_CATS]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    api.entities.Product.list('-sort_order').then((data) => {
-      const list = data.length > 0 ? data : FALLBACK_PRODUCTS;
-      setProducts(list);
-      const cats = [ALL_CATS, ...new Set(list.map(p => p.category).filter(Boolean))];
-      setCategories(cats);
-      setLoading(false);
-    }).catch(() => {
-      setProducts(FALLBACK_PRODUCTS);
-      setCategories([ALL_CATS, 'Electronics', 'Hardware', 'Connectors']);
-      setLoading(false);
-    });
+    api.entities.Product.list('-sort_order')
+      .then((data) => {
+        const list = data.length > 0 ? data : FALLBACK_PRODUCTS;
+        setProducts(list);
+        const cats = [ALL_CATS, ...new Set(list.map(p => p.category).filter(Boolean))];
+        setCategories(cats);
+        setLoading(false);
+      })
+      .catch(() => {
+        setProducts(FALLBACK_PRODUCTS);
+        setCategories([ALL_CATS, 'Electronics', 'Hardware', 'Connectors']);
+        setLoading(false);
+      });
   }, []);
 
   const filtered = filter === ALL_CATS ? products : products.filter(p => p.category === filter);
@@ -42,6 +45,16 @@ export default function Store() {
     if (p.price_label) return p.price_label;
     if (p.price != null) return `€${p.price}`;
     return 'Request Quote';
+  };
+
+  const handleAddToCart = (product) => {
+    // TODO: wire to your cart system
+    console.log('Add to cart:', product);
+  };
+
+  const handleBuyNow = (product) => {
+    // TODO: direct to checkout / WhatsApp / future Stripe
+    console.log('Buy now:', product);
   };
 
   return (
@@ -62,7 +75,9 @@ export default function Store() {
               </div>
               <div>
                 <p className="font-mono-code text-xs text-primary mb-0.5">GREECE & EU COUNTRIES</p>
-                <p className="text-sm text-muted-foreground">BoxNow delivery — Greece, Bulgaria, France, Netherlands, Belgium, Cyprus</p>
+                <p className="text-sm text-muted-foreground">
+                  BoxNow delivery — Greece, Bulgaria, France, Netherlands, Belgium, Cyprus
+                </p>
               </div>
             </div>
             <div className="hidden sm:block w-px bg-border" />
@@ -82,7 +97,9 @@ export default function Store() {
               </div>
               <div>
                 <p className="font-mono-code text-xs text-signal mb-0.5">ORDERING</p>
-                <p className="text-sm text-muted-foreground">Contact via WhatsApp to place orders and get shipping quotes</p>
+                <p className="text-sm text-muted-foreground">
+                  Contact via WhatsApp to place orders and get shipping quotes
+                </p>
               </div>
             </div>
           </div>
@@ -98,7 +115,9 @@ export default function Store() {
                 key={cat}
                 onClick={() => setFilter(cat)}
                 className={`px-4 py-2 text-xs font-mono-code rounded-md border transition-all active:scale-[0.98] ${
-                  filter === cat ? 'border-primary text-primary bg-primary/10' : 'border-border text-muted-foreground hover:text-foreground'
+                  filter === cat
+                    ? 'border-primary text-primary bg-primary/10'
+                    : 'border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {cat}
@@ -107,7 +126,9 @@ export default function Store() {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+            <div className="flex justify-center py-20">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
@@ -121,11 +142,20 @@ export default function Store() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ delay: i * 0.04 }}
-                      className="group rounded-xl border border-border bg-card/50 hover:border-primary/30 transition-all overflow-hidden flex flex-col"
+                      className="group rounded-xl border border-border bg-card/50 hover:border-primary/30 transition-all overflow-hidden flex flex-col cursor-pointer"
+                      onClick={() => setSelectedProduct({
+                        ...product,
+                        images: product.images || [product.image_url].filter(Boolean),
+                        stock: product.stock ?? 10, // fallback
+                      })}
                     >
                       {product.image_url ? (
-                        <div className="relative aspect-[4/3] overflow-hidden bg-secondary/30">
-                          <img src={product.image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div className="relative aspect-[4/3] overflow-hidden bg-secondary/30" onClick={() => navigate(`/product/${product.id}`)}>
+                          <img
+                            src={product.image_url}
+                            alt={product.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                         </div>
                       ) : (
                         <div className="aspect-[4/3] bg-secondary/30 flex items-center justify-center">
@@ -134,18 +164,31 @@ export default function Store() {
                       )}
                       <div className="p-5 flex flex-col flex-1">
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <span className="font-mono-code text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{product.category}</span>
-                          <span className={`font-mono-code text-[10px] px-2 py-0.5 rounded-full border flex-shrink-0 ${status.class}`}>{status.label}</span>
+                          <span className="font-mono-code text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">
+                            {product.category}
+                          </span>
+                          <span
+                            className={`font-mono-code text-[10px] px-2 py-0.5 rounded-full border flex-shrink-0 ${status.class}`}
+                          >
+                            {status.label}
+                          </span>
                         </div>
-                        <h3 className="font-display font-semibold text-foreground mb-2 mt-1">{product.title}</h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">{product.description}</p>
+                        <h3 className="font-display font-semibold text-foreground mb-2 mt-1">
+                          {product.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">
+                          {product.description}
+                        </p>
                         <div className="flex items-center justify-between mt-auto">
-                          <span className="font-display font-bold text-lg text-primary">{getPriceLabel(product)}</span>
+                          <span className="font-display font-bold text-lg text-primary">
+                            {getPriceLabel(product)}
+                          </span>
                           <a
                             href={`https://wa.me/6973620089?text=Hi! I'm interested in: ${product.title}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono-code text-signal border border-signal/30 rounded-md hover:bg-signal/10 active:scale-[0.98] transition-all"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <MessageCircle className="w-3 h-3" />
                             Order
@@ -159,6 +202,15 @@ export default function Store() {
             </div>
           )}
 
+          {/* Product Detail Modal */}
+          <ProductDetailModal
+            product={selectedProduct}
+            isOpen={!!selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
+          />
+
           {/* Shipping Calculator */}
           <div className="mt-12 max-w-lg">
             <ShippingCalculator />
@@ -167,7 +219,9 @@ export default function Store() {
           {/* Custom order CTA */}
           <div className="mt-16 p-8 rounded-xl border border-border bg-card/40 text-center">
             <SectionLabel text="Custom Orders" />
-            <h3 className="font-display font-bold text-xl text-foreground mb-2">Need something specific?</h3>
+            <h3 className="font-display font-bold text-xl text-foreground mb-2">
+              Need something specific?
+            </h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm">
               Can't find what you need? We source components and build custom kits for specific projects.
             </p>
