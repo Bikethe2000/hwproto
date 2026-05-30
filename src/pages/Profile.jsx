@@ -7,13 +7,13 @@ import { useWasteListings } from "@/hooks/useWasteListings";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import OrderHistory from "@/components/profile/OrderHistory";
 import SalesHistory from "@/components/profile/SalesHistory";
-import WasteListings from "@/components/profile/WasteListings";
+// import WasteListings from "@/components/profile/WasteListings";
 
 export default function Profile() {
   const profile = useUserProfile();
   const orders = useOrderHistory(profile?.uid);
   const sales = useSales(profile?.uid);
-  const listings = useWasteListings(profile?.uid);
+//   const listings = useWasteListings(profile?.uid);
 
   if (!profile) return <div className="p-6">Loading...</div>;
 
@@ -32,11 +32,11 @@ export default function Profile() {
             <h2 className="text-xl font-bold mb-4">Sales Overview</h2>
             <SalesHistory sales={sales} />
           </section>
-
+{/* 
           <section>
             <h2 className="text-xl font-bold mb-4">Waste Listings</h2>
             <WasteListings listings={listings} />
-          </section>
+          </section> */}
         </>
       )}
     </div>
