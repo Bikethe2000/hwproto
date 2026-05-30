@@ -277,7 +277,7 @@ router.get('/provider/google', (req, res) => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const redirect = req.query.redirect || '/';
   if (!clientId) return res.status(500).send('Google client id not configured');
-  const base = process.env.API_BASE_URL || (`http://localhost:${process.env.PORT || 4000}`);
+  const base = process.env.API_BASE_URL || (`https://hwproto.onrender.com:${process.env.PORT || 4000}`);
   const callback = `${base.replace(/\/$/, '')}/api/auth/provider/google/callback`;
   const params = new URLSearchParams({
     client_id: clientId,
@@ -304,7 +304,7 @@ router.get('/provider/google/callback', async (req, res) => {
 
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const base = process.env.API_BASE_URL || (`http://localhost:${process.env.PORT || 4000}`);
+    const base = process.env.API_BASE_URL || (`https://hwproto.onrender.com:${process.env.PORT || 4000}`);
     const callback = `${base.replace(/\/$/, '')}/api/auth/provider/google/callback`;
     if (!clientId || !clientSecret) return res.status(500).send('Google OAuth not configured');
 
