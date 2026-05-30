@@ -5,7 +5,7 @@ const path = require("path");
 // Load environment variables relative to this directory
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const credentialsPath = path.join(__dirname, "hwproto-8beaf-c20c412679c2.json.json");
+const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || path.join(__dirname, 'credentials.json');
 const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
 let credential;
 let serviceAccount;

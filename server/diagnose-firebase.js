@@ -16,7 +16,7 @@ console.log();
 
 // 2. Check credentials.json file
 console.log('2. Credentials File:');
-const credPath = path.join(__dirname, 'hwproto-8beaf-c20c412679c2.json');
+const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || path.join(__dirname, 'credentials.json');
 if (fs.existsSync(credPath)) {
   console.log(`   ✓ Found: ${credPath}`);
   try {
