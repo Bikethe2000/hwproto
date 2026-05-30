@@ -1,20 +1,19 @@
-import { doc, onSnapshot } from "firebase/firestore";
-import { auth, db } from "@/firebase/config";
+import { useAuth } from "@/lib/AuthContext";
 import { useEffect, useState } from "react";
+import { api } from "@/api/apiClient";
 
 export function useUserProfile() {
+  const { user, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return;
+    if (!isAuthenticated || !user?.id) return;
 
-    const ref = doc(db, "users", user.uid);
-
-    return onSnapshot(ref, (snap) => {
-      setProfile({ uid: user.uid, ...snap.data() });
-    });
-  }, []);
+    // Fetch full profile from backend
+    api.entities.User.get(user.id)
+      .then((data) => setProfile(data))
+      .catch(() => setProfile(null));
+  }, [isAuthenticated, user]);
 
   return profile;
 }
