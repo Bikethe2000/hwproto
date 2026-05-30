@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db, isFirestoreAvailable } = require('../firebase');
+const { sendNewAdminEmail } = require('../services/emailService');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -163,6 +164,99 @@ router.post('/logout', async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     console.error('Logout error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Middleware: Verify admin access
+const requireAdmin = async (req, res, next) => {
+  const token = req.headers['authorization']?.replace('Bearer ', '') || req.query.token;
+  if (!token) return res.status(401).json({ error: 'no token' });
+  try {
+    let payload;
+    try {
+      payload = jwt.verify(token, JWT_SECRET);
+    } catch (e) {
+      return res.status(401).json({ error: 'invalid token' });
+    }
+    const found = await findUserById(payload.id);
+    if (!found) return res.status(404).json({ error: 'user not found' });
+    const data = found.data;
+    if (data.current_jwt !== token) return res.status(401).json({ error: 'token revoked' });
+    if (data.role !== 'admin') return res.status(403).json({ error: 'admin access required' });
+    req.currentUser = { id: data.id || found.id, email: data.email, role: data.role };
+    next();
+  } catch (err) {
+    console.error('Admin check error:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Create a new admin user
+router.post('/create-admin', requireAdmin, async (req, res) => {
+  const { email, name } = req.body;
+  if (!email) return res.status(400).json({ error: 'email required' });
+
+  try {
+    // Check if user already exists
+    const existing = await findUserByEmail(email);
+    if (existing) return res.status(409).json({ error: 'user already exists' });
+
+    // Generate temporary password
+    const tempPassword = crypto.randomBytes(8).toString('hex').toUpperCase();
+    const id = crypto.randomUUID();
+    const hashed = await bcrypt.hash(tempPassword, 10);
+
+    const userRecord = {
+      id,
+      email,
+      name: name || '',
+      password: hashed,
+      role: 'admin',
+      created_at: Date.now(),
+      created_by: req.currentUser.email,
+      temp_password: true,
+      current_jwt: null
+    };
+
+    await createUserRecord(userRecord);
+
+    // Send welcome email with temporary password
+    let emailResult = { success: false, error: null };
+    try {
+      emailResult = await sendNewAdminEmail({
+        email,
+        name: name || '',
+        tempPassword,
+        createdBy: req.currentUser.email
+      });
+      
+      if (emailResult.success) {
+        console.log(`Welcome email sent to ${email}`);
+      } else {
+        console.warn(`Failed to send email to ${email}: ${emailResult.error}`);
+      }
+    } catch (emailErr) {
+      console.error(`Error sending email to ${email}:`, emailErr.message);
+      emailResult.error = emailErr.message;
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id,
+        email,
+        name,
+        role: 'admin',
+        tempPassword
+      },
+      message: `Admin created. Temporary password: ${tempPassword}`,
+      email_sent: emailResult.success,
+      email_status: emailResult.error ? `Failed: ${emailResult.error}` : 'Sent successfully',
+      email_preview: emailResult.preview || null
+    });
+  } catch (err) {
+    console.error('Create admin error:', err);
     res.status(500).json({ error: err.message });
   }
 });

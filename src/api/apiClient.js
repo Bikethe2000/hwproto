@@ -80,6 +80,11 @@ const api = {
     resendOtp: async () => ({}),
     resetPasswordRequest: async () => ({}),
     resetPassword: async () => ({}),
+    createAdmin: async ({ email, name }) => apiFetch('/auth/create-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name })
+    }),
     logout: (redirectUrl) => { clearToken(); if (redirectUrl) window.location.href = redirectUrl; },
     redirectToLogin: (returnUrl) => { window.location.href = `/login?from=${encodeURIComponent(returnUrl || window.location.pathname)}`; },
   },

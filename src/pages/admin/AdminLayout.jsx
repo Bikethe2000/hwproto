@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import {
-  LayoutDashboard, Package, FolderOpen, Settings, Printer, ChevronLeft, ChevronRight, LogOut, ClipboardList
+  LayoutDashboard, Package, FolderOpen, Settings, Printer, ChevronLeft, ChevronRight, LogOut, ClipboardList, UserPlus
 } from 'lucide-react';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Portfolio',      path: '/admin/portfolio',     icon: FolderOpen },
   { label: 'Print Requests', path: '/admin/print-requests',icon: Printer },
   { label: 'Services',       path: '/admin/services',      icon: Settings },
+  { label: 'Add Admin',       path: '/admin/add-admin',    icon: UserPlus },
 ];
 
 export default function AdminLayout() {

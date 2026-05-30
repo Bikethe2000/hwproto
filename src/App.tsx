@@ -36,6 +36,7 @@ import WebDevelopment from './pages/Services/WebDevelopment';
 import DashboardDev from './pages/Services/DashboardDev';
 import MVPDev from './pages/Services/MVPDev';
 import DynamicServicePage from "./pages/Services/DynamicServices";
+import AdminAddNewAdmin from "./pages/admin/AdminAddNew";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -88,6 +89,7 @@ const AuthenticatedApp = () => {
         <Route path="print-requests" element={<AdminPrintRequests />} />
         <Route path="services" element={<AdminServices />} />
         <Route path="orders" element={<AdminOrders />} />
+        <Route path="add-admin" element={<AdminAddNewAdmin />} />
       </Route>
 
       <Route path="/login" element={<Login />} />
