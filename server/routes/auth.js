@@ -5,6 +5,17 @@ const { sendNewAdminEmail } = require('../services/emailService');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+// Use global fetch if available, otherwise try to require node-fetch at runtime
+let fetchFn = globalThis.fetch;
+if (!fetchFn) {
+  try {
+    // node-fetch v2/v3 default import handling
+    const nf = require('node-fetch');
+    fetchFn = nf.default || nf;
+  } catch (e) {
+    fetchFn = null;
+  }
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
 const INITIAL_ADMIN_EMAIL = process.env.INITIAL_ADMIN_EMAIL || null;
@@ -261,4 +272,88 @@ router.post('/create-admin', requireAdmin, async (req, res) => {
   }
 });
 
+// OAuth provider routes (basic Google implementation)
+router.get('/provider/google', (req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const redirect = req.query.redirect || '/';
+  if (!clientId) return res.status(500).send('Google client id not configured');
+  const base = process.env.API_BASE_URL || (`http://localhost:${process.env.PORT || 4000}`);
+  const callback = `${base.replace(/\/$/, '')}/api/auth/provider/google/callback`;
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: callback,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'consent',
+    state: JSON.stringify({ redirect })
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+});
+
+router.get('/provider/google/callback', async (req, res) => {
+  const code = req.query.code;
+  const state = req.query.state;
+  let redirect = '/';
+  try {
+    if (state) {
+      try { redirect = JSON.parse(state).redirect || '/'; } catch {}
+    }
+    if (!code) return res.status(400).send('missing code');
+    if (!fetchFn) return res.status(500).send('fetch not available on server');
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const base = process.env.API_BASE_URL || (`http://localhost:${process.env.PORT || 4000}`);
+    const callback = `${base.replace(/\/$/, '')}/api/auth/provider/google/callback`;
+    if (!clientId || !clientSecret) return res.status(500).send('Google OAuth not configured');
+
+    const tokenRes = await fetchFn('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code: code.toString(),
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: callback,
+        grant_type: 'authorization_code'
+      })
+    });
+    const tokenJson = await tokenRes.json();
+    const accessToken = tokenJson.access_token;
+    if (!accessToken) return res.status(500).send('failed to obtain access token');
+
+    const userinfoRes = await fetchFn('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const info = await userinfoRes.json();
+    const email = info.email;
+    if (!email) return res.status(500).send('failed to retrieve user email');
+
+    // Find or create user
+    let found = await findUserByEmail(email);
+    let userId;
+    if (!found) {
+      // create a user with a generated id and no password
+      userId = crypto.randomUUID();
+      const userRecord = { id: userId, email, name: info.name || '', password: '', role: 'user', created_at: Date.now(), current_jwt: null };
+      await createUserRecord(userRecord);
+    } else {
+      userId = found.id || (found.data && found.data.id);
+    }
+
+    // Issue JWT and store
+    const token = jwt.sign({ id: userId, email, role: 'user' }, JWT_SECRET, { expiresIn: '7d' });
+    await updateUserRecord(userId, { current_jwt: token });
+
+    // Redirect back to client with access_token in query (frontend reads `access_token` URL param)
+    const sep = redirect.includes('?') ? '&' : '?';
+    return res.redirect(`${redirect}${sep}access_token=${encodeURIComponent(token)}`);
+  } catch (err) {
+    console.error('Google callback error:', err);
+    return res.status(500).send('oauth error');
+  }
+});
+
 module.exports = router;
+

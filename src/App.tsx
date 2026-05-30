@@ -22,6 +22,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Cookies from './pages/Cookies';
 
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -80,6 +83,9 @@ const AuthenticatedApp = () => {
         <Route path="/services/dashboard-dev" element={<DashboardDev />} />
         <Route path="/services/mvp-dev" element={<MVPDev />} />
         <Route path="/services/:serviceKey" element={<DynamicServicePage />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/cookies" element={<Cookies />} />
       </Route>
 
       {/* Admin */}

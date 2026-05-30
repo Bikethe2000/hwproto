@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { MessageCircle } from 'lucide-react';
+import CookieConsent from '@/components/CookieConsent';
 
 export default function SiteLayout() {
   return (
@@ -11,6 +12,7 @@ export default function SiteLayout() {
       <main className="pt-16">
         <Outlet />
       </main>
+      <CookieConsent />
       <Footer />
       {/* Floating WhatsApp button */}
       <a

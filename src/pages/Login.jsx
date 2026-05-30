@@ -32,11 +32,8 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
-    toast({
-      title: "Google Sign-In",
-      description: "Google Sign-In is not configured yet. Please log in with your email and password.",
-      variant: "destructive",
-    });
+    // Redirect to provider login (frontend uses VITE_API_BASE_URL if configured)
+    api.auth.loginWithProvider('google', window.location.href);
   };
 
   return (

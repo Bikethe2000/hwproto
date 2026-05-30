@@ -71,9 +71,18 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground font-mono-code">
-            © 2026 Hardware Prototyping Studio. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <p className="text-xs text-muted-foreground font-mono-code">
+              © 2026 Hardware Prototyping Studio. All rights reserved.
+            </p>
+            <div className="flex items-center gap-3">
+              <Link to="/privacy" className="text-xs text-muted-foreground hover:text-primary">Privacy</Link>
+              <span className="text-muted-foreground">•</span>
+              <Link to="/terms" className="text-xs text-muted-foreground hover:text-primary">Terms</Link>
+              <span className="text-muted-foreground">•</span>
+              <Link to="/cookies" className="text-xs text-muted-foreground hover:text-primary">Cookies</Link>
+            </div>
+          </div>
           <p className="text-xs text-muted-foreground font-mono-code">
             REF: SYS-001 // STATUS: OPERATIONAL
           </p>

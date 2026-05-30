@@ -6,11 +6,16 @@ const getToken = () => (hasBrowser ? window.localStorage.getItem(STORAGE_TOKEN_K
 const setToken = (t) => { if (hasBrowser) window.localStorage.setItem(STORAGE_TOKEN_KEY, t); };
 const clearToken = () => { if (hasBrowser) window.localStorage.removeItem(STORAGE_TOKEN_KEY); };
 
+// Base URL can be configured at build/deploy time via VITE_API_BASE_URL.
+const RAW_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) ? import.meta.env.VITE_API_BASE_URL : '';
+const BASE = RAW_BASE ? RAW_BASE.replace(/\/$/, '') : '';
+const apiRoot = BASE ? `${BASE}/api` : '/api';
+
 const apiFetch = async (path, opts = {}) => {
   const token = getToken();
   const headers = opts.headers || {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res = await fetch(`/api${path}`, { ...opts, headers });
+  const res = await fetch(`${apiRoot}${path}`, { ...opts, headers });
   const text = await res.text();
 
   if (!res.ok) {
@@ -68,7 +73,8 @@ const api = {
       return data;
     },
     loginWithProvider: (provider, redirectUrl = '/') => {
-      window.location.href = `/auth/provider/${provider}?redirect=${encodeURIComponent(redirectUrl)}`;
+      const baseRoot = BASE ? BASE.replace(/\/$/, '') : '';
+      window.location.href = `${baseRoot}/api/auth/provider/${provider}?redirect=${encodeURIComponent(redirectUrl)}`;
     },
     register: async ({ email, password, name }) => {
       const data = await apiFetch('/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, name }) });
@@ -99,12 +105,12 @@ const api = {
       UploadFile: async ({ file }) => {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await fetch('/api/uploads', { method: 'POST', body: fd });
+        const res = await fetch(`${apiRoot}/uploads`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error('upload failed');
         return res.json();
       },
       SendEmail: async ({ to, subject, body, html, from_name }) => {
-        const res = await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to, subject, body, html, from_name }) });
+        const res = await fetch(`${apiRoot}/send-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to, subject, body, html, from_name }) });
         if (!res.ok) throw new Error('send email failed');
         return res.json();
       },
