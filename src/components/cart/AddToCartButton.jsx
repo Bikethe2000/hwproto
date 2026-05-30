@@ -11,10 +11,13 @@ export default function AddToCartButton({ product, quantity = 1, variant = null,
   const handleClick = () => {
     addToCart(product, quantity, variant);
     setIsAdded(true);
-    // Auto-hide after 2 seconds
+  };
+
+  useEffect(() => {
+    if (!isAdded) return;
     const timer = setTimeout(() => setIsAdded(false), 2000);
     return () => clearTimeout(timer);
-  };
+  }, [isAdded]);
 
   return (
     <AnimatePresence mode="wait">

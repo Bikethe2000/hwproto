@@ -71,6 +71,7 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
   const isServiceActive = () => location.pathname.startsWith('/services');
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
@@ -150,9 +151,9 @@ export default function Navbar() {
               className="relative text-muted-foreground hover:text-foreground transition"
             >
               <ShoppingCart className="w-5 h-5" />
-              {items.length > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full px-1.5">
-                  {items.length}
+                  {cartCount}
                 </span>
               )}
             </Link>

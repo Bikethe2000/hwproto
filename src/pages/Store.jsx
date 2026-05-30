@@ -7,6 +7,7 @@ import SectionLabel from '../components/shared/SectionLabel';
 import ShippingCalculator from '../components/shipping/ShippingCalculator';
 import ProductDetailModal from '../components/product/ProductDetailModal';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '@/hooks/useCart';
 
 const STATUS_CONFIG = {
   in_stock: { label: 'In Stock', class: 'text-signal border-signal/30 bg-signal/5' },
@@ -23,6 +24,7 @@ export default function Store() {
   const [filter, setFilter] = useState(ALL_CATS);
   const [categories, setCategories] = useState([ALL_CATS]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     api.entities.Product.list('-sort_order')
@@ -49,13 +51,24 @@ export default function Store() {
   };
 
   const handleAddToCart = (product) => {
-    // TODO: wire to your cart system
-    console.log('Add to cart:', product);
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image_url: product.image_url,
+      images: product.images,
+    }, 1);
   };
 
   const handleBuyNow = (product) => {
-    // TODO: direct to checkout / WhatsApp / future Stripe
-    console.log('Buy now:', product);
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image_url: product.image_url,
+      images: product.images,
+    }, 1);
+    navigate('/checkout');
   };
 
   return (
@@ -151,7 +164,13 @@ export default function Store() {
                       })}
                     >
                       {product.image_url ? (
-                        <div className="relative aspect-[4/3] overflow-hidden bg-secondary/30" onClick={() => navigate(`/product/${product.id}`)}>
+                        <div
+                          className="relative aspect-[4/3] overflow-hidden bg-secondary/30"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/product/${product.id}`);
+                          }}
+                        >
                           <img
                             src={product.image_url}
                             alt={product.title}
@@ -208,8 +227,8 @@ export default function Store() {
             product={selectedProduct}
             isOpen={!!selectedProduct}
             onClose={() => setSelectedProduct(null)}
-            onAddToCart={handleAddToCart}
-            onBuyNow={handleBuyNow}
+            onAddToCart={() => selectedProduct && handleAddToCart(selectedProduct)}
+            onBuyNow={() => selectedProduct && handleBuyNow(selectedProduct)}
           />
 
           {/* Shipping Calculator */}

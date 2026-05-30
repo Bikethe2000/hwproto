@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -12,6 +12,10 @@ export default function ProductDetailModal({
   onBuyNow,
 }) {
   const [mainImage, setMainImage] = useState(product?.images?.[0]);
+
+  useEffect(() => {
+    setMainImage(product?.images?.[0] || product?.image_url || null);
+  }, [product]);
 
   if (!isOpen || !product) return null;
 
@@ -48,7 +52,7 @@ export default function ProductDetailModal({
             <div className="md:w-1/2 p-4">
               <div className="w-full h-80 bg-muted rounded-lg overflow-hidden">
                 <img
-                  src={mainImage}
+                  src={mainImage || product.image_url}
                   alt={product.title}
                   className="w-full h-full object-cover hover:scale-105 transition-transform"
                 />
@@ -80,7 +84,9 @@ export default function ProductDetailModal({
             <div className="md:w-1/2 p-6 space-y-6">
               {/* Price */}
               <div>
-                <p className="text-3xl font-bold">€{product.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold">
+                  {product.price != null ? `€${Number(product.price).toFixed(2)}` : (product.price_label || 'Request Quote')}
+                </p>
                 <p
                   className={`text-sm mt-1 ${
                     product.stock === 0

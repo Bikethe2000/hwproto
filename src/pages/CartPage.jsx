@@ -9,6 +9,7 @@ import SiteLayout from '@/components/layout/SiteLayout';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CartSummary from "@/components/cart/CartSummary";
+import { apiFetch } from "@/api/apiClient";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -29,8 +30,8 @@ export default function CartPage() {
   const handleStripeCheckout = async () => {
     try {
         const itemsForStripe = items.map(item => ({
-        name: item.name,
-        price: item.price,
+        name: item.productName || item.name || 'Item',
+        price: item.priceAtTime ?? item.price ?? 0,
         quantity: item.quantity,
         }));
 
@@ -143,13 +144,7 @@ export default function CartPage() {
                 <div className="sticky top-6 space-y-6">
                   <div className="bg-card border border-border rounded-lg p-6">
                     <h3 className="text-lg font-bold mb-6">Cart Summary</h3>
-                    <CartSummary
-                        items={items}
-                        subtotal={subtotal}
-                        shipping={shippingCost}
-                        total={subtotal + shippingCost}
-                        onCheckout={handleStripeCheckout}
-                    />
+                    <CartSummary items={items} subtotal={subtotal} shipping={shippingCost} total={subtotal + shippingCost + taxAmount} onCheckout={handleStripeCheckout} />
 
                   </div>
 

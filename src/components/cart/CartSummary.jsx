@@ -24,9 +24,9 @@ export default function CartSummary({
             className="flex justify-between text-sm text-muted-foreground"
           >
             <span>
-              {item.title} × {item.quantity}
+              {item.productName || item.name || item.title} × {item.quantity}
             </span>
-            <span>€{(item.price * item.quantity).toFixed(2)}</span>
+            <span>€{((item.priceAtTime ?? item.price ?? 0) * item.quantity).toFixed(2)}</span>
           </div>
         ))}
 

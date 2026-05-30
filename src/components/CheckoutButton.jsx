@@ -1,6 +1,6 @@
 // components/CheckoutButton.jsx
 import React from "react";
-import { api } from "@/api/apiClient";
+import { apiFetch } from "@/api/apiClient";
 
 export default function CheckoutButton({ cartItems }) {
   const handleCheckout = async () => {

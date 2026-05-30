@@ -13,7 +13,13 @@ if (!STRIPE_SECRET_KEY) {
   console.warn('⚠️ STRIPE_SECRET_KEY is not set. Payments will fail.');
 }
 
-const stripe = require('stripe')(STRIPE_SECRET_KEY);
+const getStripe = () => {
+  if (!STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  return require('stripe')(STRIPE_SECRET_KEY);
+};
+const MAX_CHECKOUT_QTY = 20;
 
 // Get Stripe publishable key
 router.get('/config', (req, res) => {
@@ -28,6 +34,10 @@ router.get('/config', (req, res) => {
  */
 router.post('/create-checkout-session', async (req, res) => {
   try {
+    if (!STRIPE_SECRET_KEY) {
+      return res.status(503).json({ error: 'Payments are not configured' });
+    }
+    const stripe = getStripe();
     const { items, metadata } = req.body;
     const userId = req.user?.id;
 
@@ -36,8 +46,10 @@ router.post('/create-checkout-session', async (req, res) => {
     }
 
     const lineItems = items.map((item) => {
-      if (!item.name || !item.price || !item.quantity) {
-        throw new Error('Each item must have name, price, and quantity');
+      const quantity = Number(item.quantity);
+      const price = Number(item.price);
+      if (!item.name || !Number.isFinite(price) || !Number.isFinite(quantity) || quantity <= 0 || quantity > MAX_CHECKOUT_QTY) {
+        throw new Error('Each item must have a valid name, price, and quantity');
       }
       return {
         price_data: {
@@ -45,20 +57,19 @@ router.post('/create-checkout-session', async (req, res) => {
           product_data: {
             name: item.name,
           },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: Math.round(price * 100),
         },
-        quantity: item.quantity,
+        quantity,
       };
     });
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
       line_items: lineItems,
       success_url: `${FRONTEND_URL}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${FRONTEND_URL}/checkout-cancel`,
       metadata: {
-        userId: req.user?.id || 'guest',
+        userId: userId || 'guest',
         ...(metadata || {}),
       },
     });
@@ -66,7 +77,7 @@ router.post('/create-checkout-session', async (req, res) => {
     // Optionally store session in your local entity store
     await entityStore.create('PaymentSession', {
       id: session.id,
-      userId: req.user?.id || 'guest',
+      userId: userId || 'guest',
       status: session.status,
       amount_total: session.amount_total,
       currency: session.currency,
@@ -86,6 +97,7 @@ router.post('/create-checkout-session', async (req, res) => {
  */
 router.post('/confirm', authenticate, async (req, res) => {
   try {
+    const stripe = getStripe();
     const { paymentIntentId, paymentMethodId } = req.body;
 
     if (!paymentIntentId) {
@@ -127,13 +139,14 @@ router.post(
     let event;
 
     try {
+      const stripe = STRIPE_SECRET_KEY ? getStripe() : null;
       if (!STRIPE_WEBHOOK_SECRET) {
         console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set, skipping signature verification.');
-        event = JSON.parse(req.body);
+        event = JSON.parse(req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(req.body));
       } else {
         const sig = req.headers['stripe-signature'];
         event = stripe.webhooks.constructEvent(
-          req.body,
+          req.rawBody,
           sig,
           STRIPE_WEBHOOK_SECRET
         );
@@ -146,20 +159,20 @@ router.post(
     try {
       switch (event.type) {
         case "checkout.session.completed": {
-        const session = event.data.object;
-
-        // Create order in your local store
-        await entityStore.create("Order", {
-            id: session.id,
-            userId: session.metadata.userId || null,
-            amount: session.amount_total / 100,
-            currency: session.currency,
-            status: "processing",
-            paymentStatus: "paid",
-            createdAt: new Date().toISOString(),
-        });
-
-        break;
+          const session = event.data.object;
+          const existing = await entityStore.filter('Order', { stripeSessionId: session.id });
+          if (existing.length === 0) {
+            await entityStore.create("Order", {
+              stripeSessionId: session.id,
+              userId: session.metadata.userId || null,
+              amount: session.amount_total / 100,
+              currency: session.currency,
+              status: "processing",
+              paymentStatus: "paid",
+              createdAt: new Date().toISOString(),
+            });
+          }
+          break;
         }
 
         case 'payment_intent.succeeded': {
@@ -189,6 +202,7 @@ router.post(
  */
 router.get('/methods', authenticate, async (req, res) => {
   try {
+    const stripe = getStripe();
     const userId = req.user.id;
 
     // Example: list payment methods if you store Stripe customer ID
@@ -216,6 +230,7 @@ router.get('/methods', authenticate, async (req, res) => {
  */
 router.post('/refund', authenticate, async (req, res) => {
   try {
+    const stripe = getStripe();
     const { paymentIntentId, amount, reason } = req.body;
 
     if (!paymentIntentId) {

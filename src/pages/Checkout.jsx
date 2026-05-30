@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Package, Loader2 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/lib/AuthContext';
-import { api } from '@/api/apiClient';
+import { api, apiFetch } from '@/api/apiClient';
 import SiteLayout from '@/components/layout/SiteLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -134,26 +134,29 @@ export default function Checkout() {
       if (response.success) {
         const orderId = response.data.id;
 
-        // Initialize payment intent if paying with card
         if (paymentMethod === 'card') {
-          const paymentResponse = await api.post('/payments/create-intent', {
-            amount: total,
-            currency: 'eur',
-            orderId,
+          const checkoutResponse = await apiFetch('/payments/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: items.map((item) => ({
+                name: item.productName,
+                price: item.priceAtTime,
+                quantity: item.quantity,
+              })),
+              metadata: { orderId },
+            }),
           });
 
-          if (paymentResponse.success) {
-            // Redirect to payment page
-            navigate('/order-confirmation', {
-              state: { orderId, clientSecret: paymentResponse.data.clientSecret },
-            });
+          if (checkoutResponse?.url) {
+            clearCart();
+            window.location.href = checkoutResponse.url;
+            return;
           }
-        } else {
-          // Direct confirmation without payment
-          navigate('/order-confirmation', { state: { orderId } });
         }
 
         clearCart();
+        navigate('/checkout-success');
       }
     } catch (error) {
       console.error('Failed to place order:', error);

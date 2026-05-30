@@ -51,6 +51,7 @@ export const CartProvider = ({ children }) => {
 
   // Add item to cart
   const addToCart = useCallback((product, quantity = 1, variant = null) => {
+    const normalizedPrice = Number(product.price ?? product.priceAtTime ?? 0);
     setItems((prevItems) => {
       const existingItem = prevItems.find(
         (item) => item.productId === product.id && JSON.stringify(item.variant) === JSON.stringify(variant)
@@ -70,9 +71,9 @@ export const CartProvider = ({ children }) => {
           id: `${product.id}-${Date.now()}`,
           productId: product.id,
           productName: product.title,
-          image: product.image_url,
+          image: product.image_url || product.image || product.images?.[0] || null,
           quantity,
-          priceAtTime: product.price || 0,
+          priceAtTime: Number.isFinite(normalizedPrice) ? normalizedPrice : 0,
           variant,
           addedAt: new Date().toISOString(),
         },
@@ -148,7 +149,7 @@ export const CartProvider = ({ children }) => {
       const response = await api.get(`/cart/${currentUserId}`);
       if (response.data) {
         setItems(response.data.items || []);
-        setShippingMethod(response.data.shippingMethod);
+        setShippingMethod(response.data.shippingMethod || null);
         setShippingCost(response.data.shippingCost || 0);
         setTaxAmount(response.data.taxAmount || 0);
       }

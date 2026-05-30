@@ -65,6 +65,26 @@ const createEntity = (name) => ({
 });
 
 const api = {
+  get: (path, opts = {}) => apiFetch(path, { ...opts, method: 'GET' }),
+  post: (path, body, opts = {}) => apiFetch(path, {
+    ...opts,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    body: JSON.stringify(body),
+  }),
+  patch: (path, body, opts = {}) => apiFetch(path, {
+    ...opts,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    body: JSON.stringify(body),
+  }),
+  put: (path, body, opts = {}) => apiFetch(path, {
+    ...opts,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    body: JSON.stringify(body),
+  }),
+  delete: (path, opts = {}) => apiFetch(path, { ...opts, method: 'DELETE' }),
   auth: {
     me: async () => apiFetch('/auth/me'),
     loginViaEmailPassword: async (email, password) => {
