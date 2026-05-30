@@ -47,6 +47,7 @@ import MVPDev from './pages/Services/MVPDev';
 import DynamicServicePage from "./pages/Services/DynamicServices";
 import AdminAddNewAdmin from "./pages/admin/AdminAddNew";
 import ProductPage from "./pages/ProductPage";
+import Profile from "./pages/Profile";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings} = useAuth();
@@ -98,7 +99,7 @@ const AuthenticatedApp = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/product/:id" element={<ProductPage />} />
-        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<CartPage />} />
       </Route>
 
