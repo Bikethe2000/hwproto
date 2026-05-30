@@ -13,6 +13,7 @@ export default function Profile() {
   const profile = useUserProfile();
   const orders = useOrderHistory(profile?.uid);
   const sales = useSales(profile?.uid);
+  
 //   const listings = useWasteListings(profile?.uid);
 
   if (!profile) return <div className="p-6">Loading...</div>;

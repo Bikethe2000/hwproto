@@ -6,6 +6,7 @@ import PageHero from '../components/shared/PageHero';
 import SectionLabel from '../components/shared/SectionLabel';
 import ShippingCalculator from '../components/shipping/ShippingCalculator';
 import ProductDetailModal from '../components/product/ProductDetailModal';
+import { useNavigate } from 'react-router-dom';
 
 const STATUS_CONFIG = {
   in_stock: { label: 'In Stock', class: 'text-signal border-signal/30 bg-signal/5' },

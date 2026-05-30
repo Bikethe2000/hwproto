@@ -6,6 +6,9 @@ import { api } from "@/api/apiClient";
 import { add } from "date-fns";
 import { useCart } from "@/hooks/useCart";
 import { apiFetch } from "@/api/apiClient";
+import CheckoutButton from "@/components/CheckoutButton";
+import AddToCartButton from "@/components/cart/AddToCartButton";
+
 
 
 export default function ProductPage() {
