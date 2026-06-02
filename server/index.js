@@ -64,6 +64,7 @@ app.use("/api/profiles", require("./routes/profiles"));
 app.use("/api/waste", require("./routes/waste"));
 app.use("/api/shipping", require("./routes/shipping"));
 app.use("/api/payments", require("./routes/payments"));
+app.use("/api/reviews", require("./routes/reviews"));
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

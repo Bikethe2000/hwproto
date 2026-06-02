@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ShoppingCart, ZoomIn, Check, AlertCircle } from 'lucide-react';
@@ -7,6 +7,8 @@ import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import SiteLayout from '@/components/layout/SiteLayout';
+import Reviews from '@/components/product/Reviews';
+import { AuthContext } from '@/lib/AuthContext';
 
 const STATUS_CONFIG = {
   in_stock: { label: 'In Stock', class: 'bg-signal/20 text-signal border-signal/30' },
@@ -19,6 +21,8 @@ export default function ProductDetail() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const authContext = useContext(AuthContext);
+  const isAuthenticated = authContext?.isAuthenticated || false;
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +31,10 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+
+  const handleLoginRequired = () => {
+    navigate('/login');
+  };
 
   useEffect(() => {
     loadProduct();
@@ -363,6 +371,14 @@ export default function ProductDetail() {
               </div>
             </div>
           )}
+
+          {/* Reviews Section */}
+          <Reviews 
+            productId={productId}
+            isAuthenticated={isAuthenticated}
+            currentUserId={authContext?.user?.id}
+            onLoginRequired={handleLoginRequired}
+          />
         </div>
       </div>
     </SiteLayout>

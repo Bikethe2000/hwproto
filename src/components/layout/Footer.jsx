@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Cpu, MessageCircle, Mail, ExternalLink, Link2 } from 'lucide-react';
+import { Cpu, MessageCircle, Mail, Link2 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 import NewsletterSignup from '../shared/NewsletterSignup';
 
 export default function Footer() {
@@ -63,8 +65,14 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex items-center gap-3 mb-6">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><ExternalLink className="w-4 h-4" /></a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Link2 className="w-4 h-4" /></a>
+              <a href="https://github.com/BikeThe2000" target="_blank" rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors">
+                <FontAwesomeIcon icon={['fab', 'github']} className="w-4 h-4" />
+              </a>
+              <a href="https://twitter.com/hwproto" target="_blank" rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors">
+                <FontAwesomeIcon icon="fa-solid fa-twitter" className="w-4 h-4" />
+              </a>
             </div>
             <NewsletterSignup source="footer" />
           </div>

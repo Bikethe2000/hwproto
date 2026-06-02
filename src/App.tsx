@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { ReviewProvider } from '@/contexts/ReviewContext';
 import { Analytics } from "@vercel/analytics/react"
 
 import SiteLayout from './components/layout/SiteLayout';
@@ -127,13 +128,15 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <AuthenticatedApp />
-          </Router>
-          <Toaster />
-          <Analytics />
-        </QueryClientProvider>
+        <ReviewProvider>
+          <QueryClientProvider client={queryClientInstance}>
+            <Router>
+              <AuthenticatedApp />
+            </Router>
+            <Toaster />
+            <Analytics />
+          </QueryClientProvider>
+        </ReviewProvider>
       </CartProvider>
     </AuthProvider>
   )

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Cpu } from 'lucide-react';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { Menu, X, Cpu, PenTool } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, User } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useReviewContext } from '@/contexts/ReviewContext';
 
 
 const DEFAULT_SERVICE_LINKS = [
@@ -28,9 +29,11 @@ export default function Navbar() {
   const location = useLocation();
   const { user } = useAuth();
   const { items } = useCart();
+  const { openReviewForm } = useReviewContext();
 
-
-  // Load any dynamically added services from Firestore and merge them in
+  // Check if we're on a product detail page
+  const isProductPage = location.pathname.startsWith('/product/');
+  const productId = isProductPage ? location.pathname.split('/product/')[1] : null;
   useEffect(() => {
     const loadDynamic = async () => {
       try {
@@ -145,6 +148,17 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center gap-4">
 
+            {/* Write Review Button - Show on product pages */}
+            {isProductPage && user && (
+              <button
+                onClick={() => openReviewForm(productId)}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono-code font-medium border border-accent/40 text-accent rounded-md hover:bg-accent/10 active:scale-[0.98] transition-all"
+              >
+                <PenTool className="w-4 h-4" />
+                REVIEW
+              </button>
+            )}
+
             {/* Cart Icon */}
             <Link
               to="/cart"
@@ -251,6 +265,19 @@ export default function Navbar() {
                 )
               )}
               <div className="pt-3 space-y-2">
+                {isProductPage && user && (
+                  <button
+                    onClick={() => {
+                      setMobileOpen(false);
+                      openReviewForm(productId);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-mono-code font-medium border border-accent/40 text-accent rounded-md hover:bg-accent/10"
+                  >
+                    <PenTool className="w-4 h-4" />
+                    WRITE REVIEW
+                  </button>
+                )}
+
                 {user?.role === 'admin' && (
                   <Link
                     to="/admin"
