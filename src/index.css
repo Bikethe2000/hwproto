@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 30% 2%;
+    --foreground: 210 20% 93%;
+    --card: 215 30% 5%;
+    --card-foreground: 210 20% 93%;
+    --popover: 215 30% 5%;
+    --popover-foreground: 210 20% 93%;
+    --primary: 185 100% 50%;
+    --primary-foreground: 220 30% 2%;
+    --secondary: 215 20% 10%;
+    --secondary-foreground: 210 20% 93%;
+    --muted: 215 20% 12%;
+    --muted-foreground: 210 10% 55%;
+    --accent: 268 100% 50%;
+    --accent-foreground: 210 20% 93%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 20% 14%;
+    --input: 215 20% 14%;
+    --ring: 185 100% 50%;
+    --chart-1: 185 100% 50%;
+    --chart-2: 268 100% 50%;
+    --chart-3: 110 100% 54%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --font-display: 'Inter Tight', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+    --signal: 110 100% 54%;
+  }
+
+  .dark {
+    --background: 220 30% 2%;
+    --foreground: 210 20% 93%;
+    --card: 215 30% 5%;
+    --card-foreground: 210 20% 93%;
+    --popover: 215 30% 5%;
+    --popover-foreground: 210 20% 93%;
+    --primary: 185 100% 50%;
+    --primary-foreground: 220 30% 2%;
+    --secondary: 215 20% 10%;
+    --secondary-foreground: 210 20% 93%;
+    --muted: 215 20% 12%;
+    --muted-foreground: 210 10% 55%;
+    --accent: 268 100% 50%;
+    --accent-foreground: 210 20% 93%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 20% 14%;
+    --input: 215 20% 14%;
+    --ring: 185 100% 50%;
+    --chart-1: 185 100% 50%;
+    --chart-2: 268 100% 50%;
+    --chart-3: 110 100% 54%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono-code {
+    font-family: var(--font-mono);
+  }
+  .text-signal {
+    color: hsl(110 100% 54%);
+  }
+  .bg-signal {
+    background-color: hsl(110 100% 54%);
+  }
+  .border-signal {
+    border-color: hsl(110 100% 54%);
+  }
+  .glow-cyan {
+    box-shadow: 0 0 20px hsl(185 100% 50% / 0.3), 0 0 60px hsl(185 100% 50% / 0.1);
+  }
+  .glow-signal {
+    box-shadow: 0 0 20px hsl(110 100% 54% / 0.3), 0 0 60px hsl(110 100% 54% / 0.1);
+  }
+  .grid-bg {
+    background-image: 
+      linear-gradient(hsl(215 20% 14% / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(215 20% 14% / 0.3) 1px, transparent 1px);
+    background-size: 100px 100px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(220 30% 2%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(215 20% 14%);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(185 100% 50% / 0.5);
+}

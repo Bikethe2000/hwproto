@@ -1,0 +1,79 @@
+{
+  "name": "PrintRequest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Customer name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Customer email"
+    },
+    "whatsapp": {
+      "type": "string",
+      "description": "WhatsApp number"
+    },
+    "material": {
+      "type": "string",
+      "enum": [
+        "PLA",
+        "PETG",
+        "TPU"
+      ],
+      "default": "PLA"
+    },
+    "color": {
+      "type": "string",
+      "description": "Desired color"
+    },
+    "quality": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "standard",
+        "high_detail"
+      ],
+      "default": "standard"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded STL file URL"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes from customer"
+    },
+    "estimated_cost_min": {
+      "type": "number"
+    },
+    "estimated_cost_max": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "quoted",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "material"
+  ]
+}

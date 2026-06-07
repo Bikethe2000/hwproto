@@ -1,0 +1,11 @@
+[
+  {
+    "id": "b19236d0-cf86-44a3-84f7-3fd76c7337b1",
+    "email": "bikethe200.dev@gmail.com",
+    "name": "Admin",
+    "password": "$2b$10$PjUPa2Emm0wVMlLgEbekxuv92KTL8Bj9VicCgP0hh4BpYKLy.yKSe",
+    "role": "admin",
+    "current_jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxOTIzNmQwLWNmODYtNDRhMy04NGY3LTNmZDc2YzczMzdiMSIsImVtYWlsIjoiYmlrZXRoZTIwMC5kZXZAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3ODAwODkxODksImV4cCI6MTc4MDY5Mzk4OX0.e53CHltqylYTkXDmherXn5PGujprm2C9dKrfp_JJW14",
+    "created_at": 1780089182926
+  }
+]
