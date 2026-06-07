@@ -16,6 +16,8 @@ const allowedOrigins = new Set([
   'http://localhost:5173',
   'https://hwproto.vercel.app',
   'https://www.hwproto.vercel.app',
+  'http://hwproto.store',
+  'http://www.hwproto.store'
 ]);
 
 app.use(cors({
